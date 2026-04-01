@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 
 // ============================================
-// YOUR KNOWLEDGE BASE
+// KNOWLEDGE BASE
 // ============================================
 const profile = {
   personal: {
@@ -25,24 +25,20 @@ const profile = {
   },
   projects: [
     {
-      name: "Determinex",
-      status: "TRL 1-3 Prototype",
+      name: "Determinex", status: "TRL 1-3 Prototype",
       description: "FPGA-based system handling missing, duplicate, and out-of-order data streams with deterministic fault-tolerant architecture.",
       achievement: "Submitted for Tamil Nadu Innovation and Quantum Challenge"
     },
     {
-      name: "Smart Shoe Prototype",
-      status: "Patented",
+      name: "Smart Shoe Prototype", status: "Patented",
       description: "ESP32-based shoe with air-bladder sole — Sport and Casual modes via mobile app. Includes MPU6050, MAX30102 sensors."
     },
     {
-      name: "Smart Water Tank Automation",
-      status: "Completed",
+      name: "Smart Water Tank Automation", status: "Completed",
       description: "MQTT-based dual-mode control system with Node.js and Turbotic workflows."
     },
     {
-      name: "Personal AI Assistant",
-      status: "In Progress",
+      name: "Personal AI Assistant", status: "In Progress",
       description: "AI chatbot built over a 9-month roadmap using React and Claude API."
     }
   ],
@@ -73,75 +69,57 @@ const profile = {
 function getAnswer(input) {
   const text = input.toLowerCase()
 
-  if (text.includes("who") || text.includes("about") || text.includes("introduce") || text.includes("yourself")) {
+  if (text.includes("who") || text.includes("about") || text.includes("introduce") || text.includes("yourself"))
     return `${profile.personal.name} — ${profile.personal.bio} Based in ${profile.personal.location}.`
-  }
-  else if (text.includes("education") || text.includes("college") || text.includes("degree") || text.includes("study")) {
+  else if (text.includes("education") || text.includes("college") || text.includes("degree") || text.includes("study"))
     return `${profile.education.degree} in ${profile.education.specialization}, currently in ${profile.education.year} at ${profile.education.location}.`
-  }
-  else if (text.includes("hardware") || text.includes("vlsi") || text.includes("fpga") || text.includes("verilog")) {
+  else if (text.includes("hardware") || text.includes("vlsi") || text.includes("fpga") || text.includes("verilog"))
     return `Hardware & VLSI skills: ${profile.skills.hardware.join(", ")}.`
-  }
-  else if (text.includes("programming") || text.includes("language") || text.includes("code")) {
+  else if (text.includes("programming") || text.includes("language") || text.includes("code"))
     return `Programming skills: ${profile.skills.programming.join(", ")}.`
-  }
-  else if (text.includes("skill") || text.includes("tech") || text.includes("know")) {
+  else if (text.includes("skill") || text.includes("tech") || text.includes("know"))
     return `Programming: ${profile.skills.programming.join(", ")}. Hardware: ${profile.skills.hardware.join(", ")}. Tools: ${profile.skills.tools.join(", ")}.`
-  }
   else if (text.includes("determinex") || text.includes("data stream")) {
     const p = profile.projects[0]
     return `${p.name} (${p.status}): ${p.description} ${p.achievement}.`
   }
-  else if (text.includes("shoe") || text.includes("patent") || text.includes("esp32")) {
-    const p = profile.projects[1]
-    return `${p.name} (${p.status}): ${p.description}`
-  }
-  else if (text.includes("water") || text.includes("tank") || text.includes("mqtt")) {
-    const p = profile.projects[2]
-    return `${p.name} (${p.status}): ${p.description}`
-  }
-  else if (text.includes("project") || text.includes("built") || text.includes("made")) {
+  else if (text.includes("shoe") || text.includes("patent") || text.includes("esp32"))
+    return `${profile.projects[1].name} (${profile.projects[1].status}): ${profile.projects[1].description}`
+  else if (text.includes("water") || text.includes("tank") || text.includes("mqtt"))
+    return `${profile.projects[2].name} (${profile.projects[2].status}): ${profile.projects[2].description}`
+  else if (text.includes("project") || text.includes("built") || text.includes("made"))
     return `Key projects: ${profile.projects.map(p => `${p.name} (${p.status})`).join(", ")}. Ask about any specific one!`
-  }
-  else if (text.includes("research") || text.includes("neuromorphic") || text.includes("snn")) {
+  else if (text.includes("research") || text.includes("neuromorphic") || text.includes("snn"))
     return `Research interests: ${profile.research.interests.join(", ")}. Goal: ${profile.research.goal}.`
-  }
-  else if (text.includes("goal") || text.includes("future") || text.includes("plan")) {
+  else if (text.includes("goal") || text.includes("future") || text.includes("plan"))
     return `Primary goal: ${profile.goals.primary}. Long-term: ${profile.goals.longTerm.join(", ")}.`
-  }
   else if (text.includes("achievement") || text.includes("win") || text.includes("ideathon")) {
     const a = profile.achievements[0]
     return `${a.title} at ${a.organizer}. Domain: ${a.domain}. Prize: ${a.prize}.`
   }
-  else if (text.includes("startup") || text.includes("safety watch")) {
+  else if (text.includes("startup") || text.includes("safety watch"))
     return `Startups: ${profile.startups.map(s => `${s.name} — ${s.focus}`).join(". ")}.`
-  }
-  else if (text.includes("learning") || text.includes("currently")) {
+  else if (text.includes("learning") || text.includes("currently"))
     return `Currently learning: ${profile.currentlyLearning.join(", ")}.`
-  }
-  else if (text.includes("contact") || text.includes("email") || text.includes("github")) {
+  else if (text.includes("contact") || text.includes("email") || text.includes("github"))
     return `Email: ${profile.personal.email} | GitHub: ${profile.personal.github}`
-  }
-  else {
+  else
     return "Try asking about skills, projects (Determinex, Smart Shoe, Water Tank), research, goals, or achievements!"
-  }
 }
 
 // ============================================
 // COMPONENTS
 // ============================================
 
-// Single message bubble
-function Message({ text, sender }) {
+function Message({ text, sender, time }) {
   return (
     <div className={`message ${sender}`}>
       <span className="message-text">{text}</span>
-      <span className="message-time">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+      <span className="message-time">{time}</span>
     </div>
   )
 }
 
-// Typing indicator
 function TypingIndicator() {
   return (
     <div className="message bot typing">
@@ -152,27 +130,22 @@ function TypingIndicator() {
   )
 }
 
-// Suggestion chips
 function Suggestions({ onSelect }) {
   const chips = [
-    { label: "🔷 What is Determinex?",         q: "What is Determinex?" },
-    { label: "👟 Smart Shoe patent",            q: "Tell me about the smart shoe" },
-    { label: "💻 Your skills",                  q: "What are your skills?" },
-    { label: "🧠 Research interests",           q: "What are your research interests?" },
-    { label: "🎯 Your goals",                   q: "What are your goals?" },
-    { label: "🏆 Achievements",                 q: "What are your achievements?" },
-    { label: "🚀 All projects",                 q: "Tell me about your projects" },
-    { label: "🏢 Startup vision",               q: "Tell me about your startups" },
+    { label: "🔷 What is Determinex?",        q: "What is Determinex?" },
+    { label: "👟 Smart Shoe patent",           q: "Tell me about the smart shoe" },
+    { label: "💻 Your skills",                 q: "What are your skills?" },
+    { label: "🧠 Research interests",          q: "What are your research interests?" },
+    { label: "🎯 Your goals",                  q: "What are your goals?" },
+    { label: "🏆 Achievements",                q: "What are your achievements?" },
+    { label: "🚀 All projects",                q: "Tell me about your projects" },
+    { label: "🏢 Startup vision",              q: "Tell me about your startups" },
   ]
 
   return (
     <div className="suggestions">
       {chips.map((chip, index) => (
-        <button
-          key={index}
-          className="suggestion-chip"
-          onClick={() => onSelect(chip.q)}
-        >
+        <button key={index} className="suggestion-chip" onClick={() => onSelect(chip.q)}>
           {chip.label}
         </button>
       ))}
@@ -180,7 +153,6 @@ function Suggestions({ onSelect }) {
   )
 }
 
-// Chat input row
 function ChatInput({ onSend, disabled }) {
   const [inputText, setInputText] = useState("")
 
@@ -190,52 +162,79 @@ function ChatInput({ onSend, disabled }) {
     setInputText("")
   }
 
-  function handleKeyPress(e) {
-    if (e.key === "Enter") handleSend()
-  }
-
   return (
     <div className="chat-input-row">
       <input
         type="text"
         value={inputText}
         onChange={(e) => setInputText(e.target.value)}
-        onKeyPress={handleKeyPress}
+        onKeyPress={(e) => e.key === "Enter" && handleSend()}
         placeholder="Ask me anything about Madheshwaran..."
         disabled={disabled}
       />
-      <button onClick={handleSend} disabled={disabled}>
-        Send ↑
-      </button>
+      <button onClick={handleSend} disabled={disabled}>Send ↑</button>
     </div>
   )
 }
 
-// Main chat component
+// ============================================
+// MAIN CHAT COMPONENT — with useEffect
+// ============================================
 function ChatWindow() {
-  // STATE 1 — list of messages
-  const [messages, setMessages] = useState([
-    { id: 1, text: "👋 Hi! I'm Madheshwaran's AI assistant. Ask me about his projects, skills, research, or goals!", sender: "bot" }
-  ])
+  const getTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
-  // STATE 2 — is bot currently typing?
+  const [messages, setMessages] = useState([
+    { id: 1, text: "👋 Hi! I'm Madheshwaran's AI assistant. Ask me about his projects, skills, research, or goals!", sender: "bot", time: getTime() }
+  ])
   const [isTyping, setIsTyping] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  // useRef — direct reference to the messages div
+  const messagesEndRef = useRef(null)
+  const chatMessagesRef = useRef(null)
+
+  // EFFECT 1 — Auto scroll to bottom when messages change
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages, isTyping])
+
+  // EFFECT 2 — Update page title with unread count
+  useEffect(() => {
+    if (unreadCount > 0) {
+      document.title = `(${unreadCount}) Madheshwaran | Personal AI`
+    } else {
+      document.title = "Madheshwaran | VLSI & Hardware"
+    }
+  }, [unreadCount])
+
+  // EFFECT 3 — Reset unread when user focuses the window
+  useEffect(() => {
+    function handleFocus() {
+      setUnreadCount(0)
+    }
+    window.addEventListener("focus", handleFocus)
+
+    // Cleanup — remove listener when component unmounts
+    return () => window.removeEventListener("focus", handleFocus)
+  }, [])
 
   function handleSend(userText) {
-    // Add user message to state
-    const userMessage = { id: Date.now(), text: userText, sender: "user" }
+    const userMessage = { id: Date.now(), text: userText, sender: "user", time: getTime() }
     setMessages(prev => [...prev, userMessage])
-
-    // Show typing indicator
     setIsTyping(true)
 
-    // After delay — add bot reply
     setTimeout(() => {
       const answer = getAnswer(userText)
-      const botMessage = { id: Date.now() + 1, text: answer, sender: "bot" }
+      const botMessage = { id: Date.now() + 1, text: answer, sender: "bot", time: getTime() }
       setMessages(prev => [...prev, botMessage])
       setIsTyping(false)
+      setUnreadCount(prev => prev + 1)
     }, 1000)
+  }
+
+  function handleClear() {
+    setMessages([{ id: 1, text: "👋 Chat cleared! Ask me anything about Madheshwaran.", sender: "bot", time: getTime() }])
+    setUnreadCount(0)
   }
 
   return (
@@ -245,25 +244,19 @@ function ChatWindow() {
           <span className="status-dot"></span>
           <span>Madheshwaran's AI · Online</span>
         </div>
-        <button
-          className="clear-btn"
-          onClick={() => setMessages([
-            { id: 1, text: "👋 Chat cleared! Ask me anything about Madheshwaran.", sender: "bot" }
-          ])}
-        >
-          Clear
-        </button>
+        <button className="clear-btn" onClick={handleClear}>Clear</button>
       </div>
 
-      <div className="chat-messages">
+      <div className="chat-messages" ref={chatMessagesRef}>
         {messages.map(msg => (
-          <Message key={msg.id} text={msg.text} sender={msg.sender} />
+          <Message key={msg.id} text={msg.text} sender={msg.sender} time={msg.time} />
         ))}
         {isTyping && <TypingIndicator />}
+        {/* Invisible div at bottom — scroll target */}
+        <div ref={messagesEndRef} />
       </div>
 
       <Suggestions onSelect={handleSend} />
-
       <ChatInput onSend={handleSend} disabled={isTyping} />
     </div>
   )
@@ -273,6 +266,11 @@ function ChatWindow() {
 // MAIN APP
 // ============================================
 function App() {
+  // EFFECT — Set page title on load
+  useEffect(() => {
+    document.title = "Madheshwaran | VLSI & Hardware"
+  }, [])
+
   return (
     <div className="app">
       <header className="app-header">
