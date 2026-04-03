@@ -9,7 +9,10 @@ const getTime = () =>
   new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
 function ChatWindow() {
+  const [showScrollBtn, setShowScrollBtn] = useState(false)
+const chatMessagesRef = useRef(null)
   const [messages, setMessages] = useState([
+    
     {
       id: 1,
       text: "👋 Hi! I'm Madheshwaran's AI assistant powered by Llama 3.2. Ask me anything!",
@@ -201,19 +204,37 @@ function ChatWindow() {
       )}
 
       {/* Messages */}
-      <div className="chat-messages">
-        {messages.map(msg => (
-          <Message
-            key={msg.id}
-            text={msg.text}
-            sender={msg.sender}
-            time={msg.time}
-            streaming={msg.streaming}
-          />
-        ))}
-        {isTyping && <TypingIndicator />}
-        <div ref={messagesEndRef} />
-      </div>
+    <div
+  className="chat-messages"
+  ref={chatMessagesRef}
+  onScroll={(e) => {
+    const el = e.target
+    const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100
+    setShowScrollBtn(!atBottom)
+  }}
+>
+  {messages.map(msg => (
+    <Message
+      key={msg.id}
+      text={msg.text}
+      sender={msg.sender}
+      time={msg.time}
+      streaming={msg.streaming}
+    />
+  ))}
+  {isTyping && <TypingIndicator />}
+  <div ref={messagesEndRef} />
+</div>
+
+{/* Scroll to bottom button */}
+{showScrollBtn && (
+  <button
+    className="scroll-bottom-btn"
+    onClick={() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })}
+  >
+    ↓ New messages
+  </button>
+)}
 
       <Suggestions onSelect={handleSend} />
       <ChatInput

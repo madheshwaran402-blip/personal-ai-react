@@ -679,3 +679,55 @@ p { color: #888; font-size: 15px; }
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
 }
+
+/* ===== CHARACTER COUNTER ===== */
+.chat-input-wrapper {
+  position: relative;
+}
+
+.char-counter {
+  text-align: right;
+  font-size: 11px;
+  color: #ffaa00;
+  padding: 4px 20px;
+  background: #0a0a0a;
+  border-top: 1px solid #1a1a1a;
+}
+
+.char-counter.over {
+  color: #ff4444;
+}
+
+/* ===== SCROLL TO BOTTOM ===== */
+.scroll-bottom-btn {
+  position: absolute;
+  bottom: 180px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #00ff88;
+  color: #0a0a0a;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 4px 12px rgba(0,255,136,0.3);
+  transition: all 0.2s;
+  z-index: 10;
+}
+
+.scroll-bottom-btn:hover {
+  background: #00cc6a;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+/* ===== MESSAGE STATUS ===== */
+.message.failed {
+  opacity: 0.6;
+}
+
+.message.failed .message-text {
+  color: #ff6666;
+}
