@@ -665,3 +665,17 @@ p { color: #888; font-size: 15px; }
   text-align: center;
   font-family: 'Space Mono', monospace;
 }
+
+/* ===== STREAMING CURSOR ===== */
+.stream-cursor {
+  display: inline-block;
+  color: #00ff88;
+  animation: blink 0.7s infinite;
+  margin-left: 2px;
+  font-size: 14px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}

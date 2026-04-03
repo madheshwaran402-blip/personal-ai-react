@@ -3,7 +3,7 @@ import Message from './Message'
 import TypingIndicator from './TypingIndicator'
 import Suggestions from './Suggestions'
 import ChatInput from './ChatInput'
-import { sendMessageToAI, checkHealth } from '../services/api'
+import { sendMessageStreaming, checkHealth } from '../services/api'
 
 const getTime = () =>
   new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -12,15 +12,16 @@ function ChatWindow() {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "👋 Hi! I'm Madheshwaran's AI assistant powered by Llama 3.2. Ask me about his projects, skills, research, or goals!",
+      text: "👋 Hi! I'm Madheshwaran's AI assistant powered by Llama 3.2. Ask me anything!",
       sender: "bot",
-      time: getTime()
+      time: getTime(),
+      streaming: false
     }
   ])
 
-  // Conversation history for AI memory
   const [history, setHistory] = useState([])
   const [isTyping, setIsTyping] = useState(false)
+  const [isStreaming, setIsStreaming] = useState(false)
   const [backendStatus, setBackendStatus] = useState("checking")
   const [recruiterMode, setRecruiterMode] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
@@ -38,7 +39,7 @@ function ChatWindow() {
       : "Madheshwaran | VLSI & Hardware"
   }, [unreadCount])
 
-  // Check backend on load
+  // Check backend
   useEffect(() => {
     async function checkBackend() {
       try {
@@ -62,50 +63,93 @@ function ChatWindow() {
   }, [])
 
   async function handleSend(userText) {
+    // Add user message
     const userMessage = {
       id: Date.now(),
       text: userText,
       sender: "user",
-      time: getTime()
+      time: getTime(),
+      streaming: false
     }
     setMessages(prev => [...prev, userMessage])
     setIsTyping(true)
 
-    // Update history with user message
-    const updatedHistory = [
-      ...history,
-      { role: "user", content: userText }
-    ]
+    // Create empty bot message that will fill up
+    const botId = Date.now() + 1
+    const emptyBotMessage = {
+      id: botId,
+      text: "",
+      sender: "bot",
+      time: getTime(),
+      streaming: true
+    }
+
+    const updatedHistory = [...history, { role: "user", content: userText }]
+    let fullAnswer = ""
 
     try {
-      const answer = await sendMessageToAI(userText, history, recruiterMode)
+      // Show typing dots first
+      await new Promise(resolve => setTimeout(resolve, 300))
+      setIsTyping(false)
+      setIsStreaming(true)
 
-      const botMessage = {
-        id: Date.now() + 1,
-        text: answer,
-        sender: "bot",
-        time: getTime()
-      }
-      setMessages(prev => [...prev, botMessage])
-      setUnreadCount(prev => prev + 1)
+      // Add empty bot message
+      setMessages(prev => [...prev, emptyBotMessage])
 
-      // Save full exchange to history
+      // Stream words into it
+      await sendMessageStreaming(
+        userText,
+        history,
+        recruiterMode,
+
+        // onWord — add each word to the message
+        (word) => {
+          fullAnswer += word
+          setMessages(prev =>
+            prev.map(msg =>
+              msg.id === botId
+                ? { ...msg, text: fullAnswer, streaming: true }
+                : msg
+            )
+          )
+        },
+
+        // onDone — mark as complete
+        () => {
+          setMessages(prev =>
+            prev.map(msg =>
+              msg.id === botId
+                ? { ...msg, streaming: false }
+                : msg
+            )
+          )
+          setIsStreaming(false)
+          setUnreadCount(prev => prev + 1)
+        }
+      )
+
+      // Save to history
       setHistory([
         ...updatedHistory,
-        { role: "assistant", content: answer }
+        { role: "assistant", content: fullAnswer }
       ])
 
     } catch (error) {
-      setMessages(prev => [...prev, {
-        id: Date.now() + 1,
-        text: "⚠️ Could not reach the AI. Make sure Flask and Ollama are running.",
-        sender: "bot",
-        time: getTime()
-      }])
+      setIsTyping(false)
+      setIsStreaming(false)
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === botId
+            ? {
+                ...msg,
+                text: "⚠️ Could not reach the AI. Make sure Flask and Ollama are running.",
+                streaming: false
+              }
+            : msg
+        )
+      )
       setBackendStatus("offline")
     }
-
-    setIsTyping(false)
   }
 
   function handleClear() {
@@ -113,7 +157,8 @@ function ChatWindow() {
       id: 1,
       text: "👋 Chat cleared! Ask me anything about Madheshwaran.",
       sender: "bot",
-      time: getTime()
+      time: getTime(),
+      streaming: false
     }])
     setHistory([])
     setUnreadCount(0)
@@ -133,11 +178,9 @@ function ChatWindow() {
           </span>
         </div>
         <div className="chat-header-actions">
-          {/* Recruiter Mode Toggle */}
           <button
             className={`recruiter-btn ${recruiterMode ? 'active' : ''}`}
             onClick={() => setRecruiterMode(!recruiterMode)}
-            title="Toggle recruiter mode"
           >
             👔 {recruiterMode ? 'Recruiter ON' : 'Recruiter'}
           </button>
@@ -145,31 +188,38 @@ function ChatWindow() {
         </div>
       </div>
 
-      {/* Offline banner */}
+      {/* Banners */}
       {backendStatus === 'offline' && (
         <div className="offline-banner">
           ⚠️ Backend offline. Run: <code>ollama serve</code> and <code>python app.py</code>
         </div>
       )}
-
-      {/* Recruiter mode banner */}
       {recruiterMode && backendStatus === 'online' && (
         <div className="recruiter-banner">
-          👔 Recruiter Mode ON — answers are more formal and highlight achievements
+          👔 Recruiter Mode ON — formal tone, highlights achievements
         </div>
       )}
 
       {/* Messages */}
       <div className="chat-messages">
         {messages.map(msg => (
-          <Message key={msg.id} text={msg.text} sender={msg.sender} time={msg.time} />
+          <Message
+            key={msg.id}
+            text={msg.text}
+            sender={msg.sender}
+            time={msg.time}
+            streaming={msg.streaming}
+          />
         ))}
         {isTyping && <TypingIndicator />}
         <div ref={messagesEndRef} />
       </div>
 
       <Suggestions onSelect={handleSend} />
-      <ChatInput onSend={handleSend} disabled={isTyping || backendStatus === 'offline'} />
+      <ChatInput
+        onSend={handleSend}
+        disabled={isTyping || isStreaming || backendStatus === 'offline'}
+      />
     </div>
   )
 }
