@@ -1,4 +1,4 @@
-const BACKEND_URL = "http://127.0.0.1:5000"
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000"
 const MAX_RETRIES = 2
 const RETRY_DELAY = 1500
 

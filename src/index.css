@@ -731,3 +731,51 @@ p { color: #888; font-size: 15px; }
 .message.failed .message-text {
   color: #ff6666;
 }
+
+/* ===== EXPORT BUTTON ===== */
+.export-btn {
+  background: transparent;
+  border: 1px solid #222;
+  color: #555;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.export-btn:hover {
+  border-color: #00ff88;
+  color: #00ff88;
+}
+
+/* ===== RETRY LINK ===== */
+.retry-link {
+  cursor: pointer;
+  text-decoration: underline;
+  color: #ff6666;
+}
+
+.retry-link:hover { color: #ff4444; }
+
+/* ===== KEYBOARD SHORTCUTS ===== */
+.shortcuts-hint {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  padding: 8px;
+  background: #0a0a0a;
+  border-top: 1px solid #111;
+}
+
+.shortcuts-hint span {
+  font-size: 10px;
+  color: #333;
+  font-family: 'Space Mono', monospace;
+}
+
+/* ===== FAILED MESSAGE ===== */
+.message.bot.failed .message-text {
+  color: #ff6666;
+}
