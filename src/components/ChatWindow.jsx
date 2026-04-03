@@ -17,8 +17,12 @@ function ChatWindow() {
       time: getTime()
     }
   ])
+
+  // Conversation history for AI memory
+  const [history, setHistory] = useState([])
   const [isTyping, setIsTyping] = useState(false)
   const [backendStatus, setBackendStatus] = useState("checking")
+  const [recruiterMode, setRecruiterMode] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const messagesEndRef = useRef(null)
 
@@ -34,17 +38,16 @@ function ChatWindow() {
       : "Madheshwaran | VLSI & Hardware"
   }, [unreadCount])
 
-  // Check backend health on load
+  // Check backend on load
   useEffect(() => {
     async function checkBackend() {
       try {
         const health = await checkHealth()
-        if (health.backend === "running" && health.ollama === "running") {
-          setBackendStatus("online")
-        } else {
-          setBackendStatus("offline")
-        }
-      } catch (error) {
+        setBackendStatus(
+          health.backend === "running" && health.ollama === "running"
+            ? "online" : "offline"
+        )
+      } catch {
         setBackendStatus("offline")
       }
     }
@@ -59,7 +62,6 @@ function ChatWindow() {
   }, [])
 
   async function handleSend(userText) {
-    // Add user message
     const userMessage = {
       id: Date.now(),
       text: userText,
@@ -69,9 +71,14 @@ function ChatWindow() {
     setMessages(prev => [...prev, userMessage])
     setIsTyping(true)
 
+    // Update history with user message
+    const updatedHistory = [
+      ...history,
+      { role: "user", content: userText }
+    ]
+
     try {
-      // Call real AI backend
-      const answer = await sendMessageToAI(userText)
+      const answer = await sendMessageToAI(userText, history, recruiterMode)
 
       const botMessage = {
         id: Date.now() + 1,
@@ -82,15 +89,19 @@ function ChatWindow() {
       setMessages(prev => [...prev, botMessage])
       setUnreadCount(prev => prev + 1)
 
+      // Save full exchange to history
+      setHistory([
+        ...updatedHistory,
+        { role: "assistant", content: answer }
+      ])
+
     } catch (error) {
-      // Show error message if backend is down
-      const errorMessage = {
+      setMessages(prev => [...prev, {
         id: Date.now() + 1,
-        text: "⚠️ Could not reach the AI backend. Make sure Flask and Ollama are running.",
+        text: "⚠️ Could not reach the AI. Make sure Flask and Ollama are running.",
         sender: "bot",
         time: getTime()
-      }
-      setMessages(prev => [...prev, errorMessage])
+      }])
       setBackendStatus("offline")
     }
 
@@ -104,29 +115,47 @@ function ChatWindow() {
       sender: "bot",
       time: getTime()
     }])
+    setHistory([])
     setUnreadCount(0)
   }
 
   return (
     <div className="chat-container">
 
-      {/* Header with live backend status */}
+      {/* Header */}
       <div className="chat-header">
         <div className="chat-status">
-          <span className={`status-dot ${backendStatus === 'online' ? 'online' : backendStatus === 'offline' ? 'offline' : 'checking'}`}></span>
+          <span className={`status-dot ${backendStatus}`}></span>
           <span>
-            {backendStatus === 'online' && "Llama 3.2 · Online"}
-            {backendStatus === 'offline' && "AI Offline — start Flask & Ollama"}
-            {backendStatus === 'checking' && "Connecting to AI..."}
+            {backendStatus === 'online' && `Llama 3.2 · ${recruiterMode ? '👔 Recruiter Mode' : 'Online'}`}
+            {backendStatus === 'offline' && "AI Offline"}
+            {backendStatus === 'checking' && "Connecting..."}
           </span>
         </div>
-        <button className="clear-btn" onClick={handleClear}>Clear</button>
+        <div className="chat-header-actions">
+          {/* Recruiter Mode Toggle */}
+          <button
+            className={`recruiter-btn ${recruiterMode ? 'active' : ''}`}
+            onClick={() => setRecruiterMode(!recruiterMode)}
+            title="Toggle recruiter mode"
+          >
+            👔 {recruiterMode ? 'Recruiter ON' : 'Recruiter'}
+          </button>
+          <button className="clear-btn" onClick={handleClear}>Clear</button>
+        </div>
       </div>
 
-      {/* Offline warning banner */}
+      {/* Offline banner */}
       {backendStatus === 'offline' && (
         <div className="offline-banner">
           ⚠️ Backend offline. Run: <code>ollama serve</code> and <code>python app.py</code>
+        </div>
+      )}
+
+      {/* Recruiter mode banner */}
+      {recruiterMode && backendStatus === 'online' && (
+        <div className="recruiter-banner">
+          👔 Recruiter Mode ON — answers are more formal and highlight achievements
         </div>
       )}
 

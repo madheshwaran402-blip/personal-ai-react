@@ -625,3 +625,43 @@ p { color: #888; font-size: 15px; }
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+/* ===== RECRUITER MODE ===== */
+.chat-header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.recruiter-btn {
+  background: transparent;
+  border: 1px solid #333;
+  color: #666;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.recruiter-btn:hover {
+  border-color: #00ff88;
+  color: #00ff88;
+}
+
+.recruiter-btn.active {
+  background: rgba(0,255,136,0.1);
+  border-color: #00ff88;
+  color: #00ff88;
+}
+
+.recruiter-banner {
+  background: rgba(0,255,136,0.05);
+  border-bottom: 1px solid rgba(0,255,136,0.15);
+  color: #00ff88;
+  padding: 8px 20px;
+  font-size: 12px;
+  text-align: center;
+  font-family: 'Space Mono', monospace;
+}

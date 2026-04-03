@@ -1,17 +1,15 @@
-// ============================================
-// API SERVICE — talks to your Flask backend
-// ============================================
-
 const BACKEND_URL = "http://127.0.0.1:5000"
 
-// Send message to Flask → Ollama → get AI answer
-export async function sendMessageToAI(message) {
+// Send message with full conversation history
+export async function sendMessageToAI(message, history = [], recruiterMode = false) {
   const response = await fetch(`${BACKEND_URL}/chat`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ message })
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message,
+      history,      // conversation memory
+      recruiterMode // professional mode
+    })
   })
 
   if (!response.ok) {
@@ -22,9 +20,7 @@ export async function sendMessageToAI(message) {
   return data.answer
 }
 
-// Check if backend is running
 export async function checkHealth() {
   const response = await fetch(`${BACKEND_URL}/health`)
-  const data = await response.json()
-  return data
+  return await response.json()
 }
