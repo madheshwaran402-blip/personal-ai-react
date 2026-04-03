@@ -584,3 +584,44 @@ p { color: #888; font-size: 15px; }
   color: #222;
   margin-top: 6px;
 }
+
+/* ===== BACKEND STATUS ===== */
+.status-dot.online {
+  background: #00ff88;
+  animation: pulse 2s infinite;
+}
+
+.status-dot.offline {
+  background: #ff4444;
+  animation: none;
+}
+
+.status-dot.checking {
+  background: #ffaa00;
+  animation: pulse 1s infinite;
+}
+
+/* Offline Banner */
+.offline-banner {
+  background: rgba(255, 68, 68, 0.1);
+  border-bottom: 1px solid rgba(255, 68, 68, 0.2);
+  color: #ff6666;
+  padding: 10px 20px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.offline-banner code {
+  background: rgba(255,255,255,0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  margin: 0 4px;
+}
+
+/* AI thinking — longer messages */
+.message.bot .message-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
