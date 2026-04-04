@@ -72,8 +72,9 @@ function ChatWindow() {
       }
     }
     window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [messages])
+  return () => window.removeEventListener("keydown", handleKeyDown)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [messages])
 
   async function handleSend(userText) {
     const userMessage = {
