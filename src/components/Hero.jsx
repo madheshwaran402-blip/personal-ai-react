@@ -5,7 +5,14 @@ function Hero() {
     <section className="hero">
       <div className="hero-content">
         <div className="hero-photo">
-          <img src="/photo.jpg" alt="Madheshwaran" />
+          <img
+  src="/photo.jpg"
+  alt="Madheshwaran Maruthamuthu — VLSI Design Student"
+  loading="eager"
+  decoding="async"
+  width="140"
+  height="140"
+/>
         </div>
         <div className="hero-text">
           <p className="greeting">Hello, I'm</p>
