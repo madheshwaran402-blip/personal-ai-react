@@ -1,11 +1,18 @@
 import React from 'react'
 
-function Message({ text, sender, time, streaming }) {
+interface MessageProps {
+  text: string
+  sender: "user" | "bot"
+  time: string
+  streaming?: boolean
+  failed?: boolean
+}
+
+function Message({ text, sender, time, streaming, failed }: MessageProps) {
   return (
-    <div className={`message ${sender}`}>
+    <div className={`message ${sender} ${failed ? 'failed' : ''}`}>
       <span className="message-text">
         {text}
-        {/* Blinking cursor while streaming */}
         {streaming && <span className="stream-cursor">▊</span>}
       </span>
       {!streaming && <span className="message-time">{time}</span>}

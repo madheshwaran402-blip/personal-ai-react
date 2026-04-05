@@ -1,37 +1,33 @@
-// ============================================
-// CUSTOM HOOK — Chat History with localStorage
-// ============================================
 import { useState, useEffect } from 'react'
+import { Message } from '../data/types'
 
 const STORAGE_KEY = 'madheshwaran_chat_history'
 const MAX_SAVED = 20
 
-export function useChatHistory(initialMessage) {
-  const [messages, setMessages] = useState(() => {
-    // Load from localStorage on first render
+export function useChatHistory(initialMessage: Message) {
+  const [messages, setMessages] = useState<Message[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) {
-        const parsed = JSON.parse(saved)
+        const parsed: Message[] = JSON.parse(saved)
         if (parsed.length > 0) return parsed
       }
     } catch {
-      // If corrupted, start fresh
+      // corrupted storage
     }
     return [initialMessage]
   })
 
-  // Save to localStorage whenever messages change
   useEffect(() => {
     try {
       const toSave = messages.slice(-MAX_SAVED)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave))
     } catch {
-      // Storage full — skip saving
+      // storage full
     }
   }, [messages])
 
-  function clearHistory() {
+  function clearHistory(): void {
     localStorage.removeItem(STORAGE_KEY)
     setMessages([initialMessage])
   }

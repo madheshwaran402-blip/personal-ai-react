@@ -1,11 +1,15 @@
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000"
-const MAX_RETRIES = 2
-const RETRY_DELAY = 1500
+import { HistoryItem, HealthResponse } from '../data/types'
+
+const BACKEND_URL: string =
+  process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000"
+
+const MAX_RETRIES: number = 2
+const RETRY_DELAY: number = 1500
 
 // ============================================
 // RETRY HELPER
 // ============================================
-async function withRetry(fn, retries = MAX_RETRIES) {
+async function withRetry<T>(fn: () => Promise<T>, retries: number = MAX_RETRIES): Promise<T> {
   for (let i = 0; i <= retries; i++) {
     try {
       return await fn()
@@ -15,19 +19,20 @@ async function withRetry(fn, retries = MAX_RETRIES) {
       await new Promise(r => setTimeout(r, RETRY_DELAY))
     }
   }
+  throw new Error("Max retries exceeded")
 }
 
 // ============================================
 // STREAMING
 // ============================================
 export async function sendMessageStreaming(
-  message,
-  history = [],
-  recruiterMode = false,
-  onWord,
-  onDone,
-  onError
-) {
+  message: string,
+  history: HistoryItem[] = [],
+  recruiterMode: boolean = false,
+  onWord: (word: string) => void,
+  onDone: () => void,
+  onError: (error: string) => void
+): Promise<void> {
   try {
     const response = await fetch(`${BACKEND_URL}/chat/stream`, {
       method: "POST",
@@ -39,7 +44,9 @@ export async function sendMessageStreaming(
       throw new Error(`Backend error: ${response.status}`)
     }
 
-    const reader = response.body.getReader()
+    const reader = response.body?.getReader()
+    if (!reader) throw new Error("No reader available")
+
     const decoder = new TextDecoder()
 
     while (true) {
@@ -53,16 +60,9 @@ export async function sendMessageStreaming(
         if (line.startsWith('data: ')) {
           try {
             const data = JSON.parse(line.slice(6))
-
-            if (data.error) {
-              onError(data.error)
-              return
-            }
+            if (data.error) { onError(data.error); return }
             if (data.word) onWord(data.word)
-            if (data.done) {
-              onDone()
-              return
-            }
+            if (data.done) { onDone(); return }
           } catch {
             // Skip malformed chunks
           }
@@ -72,7 +72,7 @@ export async function sendMessageStreaming(
     onDone()
 
   } catch (error) {
-    onError(error.message)
+    onError(error instanceof Error ? error.message : "Unknown error")
   }
 }
 
@@ -80,10 +80,10 @@ export async function sendMessageStreaming(
 // REGULAR WITH RETRY
 // ============================================
 export async function sendMessageToAI(
-  message,
-  history = [],
-  recruiterMode = false
-) {
+  message: string,
+  history: HistoryItem[] = [],
+  recruiterMode: boolean = false
+): Promise<string> {
   return withRetry(async () => {
     const response = await fetch(`${BACKEND_URL}/chat`, {
       method: "POST",
@@ -92,18 +92,18 @@ export async function sendMessageToAI(
     })
     if (!response.ok) throw new Error(`Backend error: ${response.status}`)
     const data = await response.json()
-    return data.answer
+    return data.answer as string
   })
 }
 
 // ============================================
-// HEALTH CHECK WITH RETRY
+// HEALTH CHECK
 // ============================================
-export async function checkHealth() {
+export async function checkHealth(): Promise<HealthResponse> {
   return withRetry(async () => {
     const response = await fetch(`${BACKEND_URL}/health`, {
       signal: AbortSignal.timeout(5000)
     })
-    return await response.json()
+    return await response.json() as HealthResponse
   }, 1)
 }

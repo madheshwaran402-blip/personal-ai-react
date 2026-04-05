@@ -1,6 +1,6 @@
 import React from 'react'
 
-function TypingIndicator() {
+function TypingIndicator(){
   return (
     <div className="message bot typing">
       <span className="dot"></span>
