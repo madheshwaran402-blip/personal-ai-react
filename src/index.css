@@ -819,3 +819,40 @@ p { color: #888; font-size: 15px; }
   margin-left: 12px;
   font-family: 'Space Mono', monospace;
 }
+
+/* ===== CONTEXT FEATURES ===== */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.visitor-greeting {
+  font-size: 13px;
+  color: #00ff88;
+  font-family: 'Space Mono', monospace;
+}
+
+.nav-recruiter-btn {
+  background: transparent;
+  border: 1px solid #333;
+  color: #555;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  margin-left: 8px;
+}
+
+.nav-recruiter-btn:hover {
+  border-color: #00ff88;
+  color: #00ff88;
+}
+
+.nav-recruiter-btn.active {
+  background: rgba(0,255,136,0.1);
+  border-color: #00ff88;
+  color: #00ff88;
+}

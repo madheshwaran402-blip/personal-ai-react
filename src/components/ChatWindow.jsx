@@ -1,3 +1,4 @@
+import { useAppContext } from '../context/AppContext'
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import Message from './Message'
 import TypingIndicator from './TypingIndicator'
@@ -26,7 +27,8 @@ function ChatWindow() {
   const [history, setHistory] = useState([])
   const [isTyping, setIsTyping] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
-  const [recruiterMode, setRecruiterMode] = useState(false)
+  // Get recruiterMode from global context instead of local state
+  const { recruiterMode, toggleRecruiterMode, visitorName } = useAppContext()
   const [unreadCount, setUnreadCount] = useState(0)
   const [showScrollBtn, setShowScrollBtn] = useState(false)
 
@@ -64,9 +66,9 @@ function ChatWindow() {
         exportChatAsText(messages)
       }
       if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
-        e.preventDefault()
-        setRecruiterMode(prev => !prev)
-      }
+  e.preventDefault()
+  toggleRecruiterMode()
+}
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
@@ -204,12 +206,12 @@ function ChatWindow() {
         </div>
         <div className="chat-header-actions">
           <button
-            className={`recruiter-btn ${recruiterMode ? 'active' : ''}`}
-            onClick={() => setRecruiterMode(!recruiterMode)}
-            title="Toggle recruiter mode (Cmd+R)"
-          >
-            👔 {recruiterMode ? 'ON' : 'Recruiter'}
-          </button>
+  className={`recruiter-btn ${recruiterMode ? 'active' : ''}`}
+  onClick={toggleRecruiterMode}
+  title="Toggle recruiter mode (Cmd+R)"
+>
+  👔 {recruiterMode ? 'ON' : 'Recruiter'}
+</button>
           <button
             className="export-btn"
             onClick={() => exportChatAsText(messages)}

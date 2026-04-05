@@ -1,16 +1,15 @@
-import { useEffect, lazy, Suspense } from 'react'
+import { useEffect } from 'react'
+import { AppProvider } from './context/AppContext'
 import Header from './components/Header'
+import Hero from './components/Hero'
+import Education from './components/Education'
+import Skills from './components/Skills'
+import Projects from './components/Projects'
+import Research from './components/Research'
+import Achievements from './components/Achievements'
+import ChatWindow from './components/ChatWindow'
+import { lazy, Suspense } from 'react'
 
-// Lazy load heavy components — only load when needed
-const Hero = lazy(() => import('./components/Hero'))
-const Education = lazy(() => import('./components/Education'))
-const Skills = lazy(() => import('./components/Skills'))
-const Projects = lazy(() => import('./components/Projects'))
-const Research = lazy(() => import('./components/Research'))
-const Achievements = lazy(() => import('./components/Achievements'))
-const ChatWindow = lazy(() => import('./components/ChatWindow'))
-
-// Loading skeleton shown while components load
 function SectionSkeleton() {
   return (
     <div className="skeleton-section">
@@ -21,7 +20,7 @@ function SectionSkeleton() {
   )
 }
 
-function App() {
+function AppContent() {
   useEffect(() => {
     document.title = "Madheshwaran | VLSI & Hardware"
   }, [])
@@ -33,23 +32,18 @@ function App() {
         <Suspense fallback={<SectionSkeleton />}>
           <Hero />
         </Suspense>
-
         <Suspense fallback={<SectionSkeleton />}>
           <Education />
         </Suspense>
-
         <Suspense fallback={<SectionSkeleton />}>
           <Skills />
         </Suspense>
-
         <Suspense fallback={<SectionSkeleton />}>
           <Projects />
         </Suspense>
-
         <Suspense fallback={<SectionSkeleton />}>
           <Research />
         </Suspense>
-
         <Suspense fallback={<SectionSkeleton />}>
           <Achievements />
         </Suspense>
@@ -75,6 +69,15 @@ function App() {
         <p className="footer-sub">Powered by React · Llama 3.2</p>
       </footer>
     </div>
+  )
+}
+
+// Wrap everything in AppProvider
+function App() {
+  return (
+    <AppProvider>
+      <AppContent />
+    </AppProvider>
   )
 }
 
