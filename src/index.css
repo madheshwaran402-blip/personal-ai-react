@@ -811,3 +811,11 @@ p { color: #888; font-size: 15px; }
   50% { opacity: 1; }
   100% { opacity: 0.5; }
 }
+
+/* ===== CHAT COUNT ===== */
+.chat-count {
+  font-size: 11px;
+  color: #333;
+  margin-left: 12px;
+  font-family: 'Space Mono', monospace;
+}

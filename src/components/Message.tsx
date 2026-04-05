@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 
 interface MessageProps {
   text: string
@@ -8,7 +8,14 @@ interface MessageProps {
   failed?: boolean
 }
 
-function Message({ text, sender, time, streaming, failed }: MessageProps) {
+// memo() — only re-renders if props actually changed
+const Message = memo(function Message({
+  text,
+  sender,
+  time,
+  streaming,
+  failed
+}: MessageProps) {
   return (
     <div className={`message ${sender} ${failed ? 'failed' : ''}`}>
       <span className="message-text">
@@ -18,6 +25,6 @@ function Message({ text, sender, time, streaming, failed }: MessageProps) {
       {!streaming && <span className="message-time">{time}</span>}
     </div>
   )
-}
+})
 
 export default Message

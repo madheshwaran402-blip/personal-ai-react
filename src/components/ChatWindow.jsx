@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import Message from './Message'
 import TypingIndicator from './TypingIndicator'
 import Suggestions from './Suggestions'
@@ -55,28 +55,26 @@ function ChatWindow() {
   // Keyboard shortcuts
   useEffect(() => {
     function handleKeyDown(e) {
-      // Ctrl/Cmd + K = clear chat
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
         handleClear()
       }
-      // Ctrl/Cmd + E = export chat
       if ((e.metaKey || e.ctrlKey) && e.key === 'e') {
         e.preventDefault()
         exportChatAsText(messages)
       }
-      // Ctrl/Cmd + R = toggle recruiter mode
       if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
         e.preventDefault()
         setRecruiterMode(prev => !prev)
       }
     }
     window.addEventListener("keydown", handleKeyDown)
-  return () => window.removeEventListener("keydown", handleKeyDown)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [messages])
+    return () => window.removeEventListener("keydown", handleKeyDown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages])
 
-  async function handleSend(userText) {
+  // ✅ FIXED — useCallback properly closed
+  const handleSend = useCallback(async (userText) => {
     const userMessage = {
       id: Date.now(),
       text: userText,
@@ -156,13 +154,30 @@ function ChatWindow() {
         setIsTyping(false)
       }
     )
-  }
+  }, [history, recruiterMode]) // ✅ dependency array in right place
 
   function handleClear() {
     clearHistory()
     setHistory([])
     setUnreadCount(0)
   }
+
+  // Memoized stats
+  const chatStats = useMemo(() => {
+    const botMessages = messages.filter(msg => msg.sender === "bot")
+    const userMessages = messages.filter(msg => msg.sender === "user")
+    return {
+      total: messages.length,
+      botCount: botMessages.length,
+      userCount: userMessages.length,
+      isEmpty: messages.length <= 1
+    }
+  }, [messages])
+
+  // Memoized suggestion handler
+  const handleSuggestionSelect = useCallback((question) => {
+    handleSend(question)
+  }, [handleSend])
 
   return (
     <div className="chat-container">
@@ -174,15 +189,18 @@ function ChatWindow() {
           <span>
             {backendStatus === 'online' && `Llama 3.2 · ${recruiterMode ? '👔 Recruiter' : 'Online'}`}
             {backendStatus === 'offline' && (
-              <span
-                className="retry-link"
-                onClick={recheckNow}
-              >
+              <span className="retry-link" onClick={recheckNow}>
                 AI Offline — click to retry
               </span>
             )}
             {backendStatus === 'checking' && "Connecting..."}
           </span>
+          {/* Chat stats powered by useMemo */}
+          {!chatStats.isEmpty && (
+            <span className="chat-count">
+              {chatStats.userCount} asked · {chatStats.botCount} answered
+            </span>
+          )}
         </div>
         <div className="chat-header-actions">
           <button
@@ -255,7 +273,7 @@ function ChatWindow() {
         </button>
       )}
 
-      <Suggestions onSelect={handleSend} />
+      <Suggestions onSelect={handleSuggestionSelect} />
       <ChatInput
         onSend={handleSend}
         disabled={isTyping || isStreaming || backendStatus === 'offline'}

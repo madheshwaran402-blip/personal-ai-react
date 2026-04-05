@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { SuggestionChip } from '../data/types'
 
 interface SuggestionsProps {
@@ -16,7 +16,8 @@ const chips: SuggestionChip[] = [
   { label: "🏢 Startup vision",              q: "Tell me about your startups" },
 ]
 
-function Suggestions({ onSelect }: SuggestionsProps) {
+// memo() — chips never change so this never re-renders unnecessarily
+const Suggestions = memo(function Suggestions({ onSelect }: SuggestionsProps) {
   return (
     <div className="suggestions">
       {chips.map((chip: SuggestionChip, index: number) => (
@@ -30,6 +31,6 @@ function Suggestions({ onSelect }: SuggestionsProps) {
       ))}
     </div>
   )
-}
+})
 
 export default Suggestions
