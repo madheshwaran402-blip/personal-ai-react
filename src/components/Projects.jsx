@@ -1,5 +1,6 @@
-import React from 'react'
+import { motion } from 'framer-motion'
 import ProjectCard from './ProjectCard'
+import { fadeUp, staggerContainer, staggerItem } from '../utils/animations'
 
 const projects = [
   {
@@ -13,33 +14,48 @@ const projects = [
   {
     name: "Smart Shoe Prototype",
     status: "Patented",
-    description: "ESP32-based shoe with air-bladder sole — Sport Mode (curved) and Casual Mode (flat) via mobile app. Includes MPU6050, MAX30102 sensors, pump control and battery management.",
+    description: "ESP32-based shoe with air-bladder sole — Sport Mode and Casual Mode via mobile app. Includes MPU6050, MAX30102 sensors.",
     tech: ["ESP32", "IoT", "Embedded Systems", "Mobile App"]
   },
   {
     name: "Smart Water Tank Automation",
     status: "Completed",
-    description: "MQTT-based dual-mode control system with live hardware mode and simulation demo mode. Built with Node.js and Turbotic workflows.",
+    description: "MQTT-based dual-mode control system with live hardware mode and simulation demo mode. Built with Node.js and Turbotic.",
     tech: ["MQTT", "Node.js", "Turbotic"]
   },
   {
     name: "Personal AI Assistant",
     status: "In Progress",
-    description: "AI chatbot that knows everything about Madheshwaran. Built over a 9-month roadmap using React and Claude API.",
-    tech: ["React", "Claude API", "Python", "JavaScript"]
+    description: "AI chatbot that knows everything about Madheshwaran. Built over a 9-month roadmap using React and Ollama.",
+    tech: ["React", "Python", "Flask", "Ollama"]
   }
 ]
 
 function Projects() {
   return (
-    <section className="section" id="projects">
+    <motion.section
+      className="section"
+      id="projects"
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
+    >
       <h2>Projects</h2>
-      <div className="projects-list">
+      <motion.div
+        className="projects-list"
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.1 }}
+      >
         {projects.map((project, i) => (
-          <ProjectCard key={i} {...project} />
+          <motion.div key={i} variants={staggerItem}>
+            <ProjectCard {...project} />
+          </motion.div>
         ))}
-      </div>
-    </section>
+      </motion.div>
+    </motion.section>
   )
 }
 

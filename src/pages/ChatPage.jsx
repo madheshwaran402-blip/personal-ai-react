@@ -9,8 +9,6 @@ function ChatPage() {
 
   return (
     <div className="chat-page">
-
-      {/* Chat page header */}
       <div className="chat-page-header">
         <Link to="/" className="back-link">
           ← Back to Portfolio
@@ -23,12 +21,9 @@ function ChatPage() {
           Powered by Llama 3.2
         </div>
       </div>
-
-      {/* Full screen chat */}
       <div className="chat-page-body">
         <ChatWindow fullScreen={true} />
       </div>
-
     </div>
   )
 }
