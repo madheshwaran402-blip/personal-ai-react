@@ -1,12 +1,21 @@
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import ProjectCard from '../components/ProjectCard'
 
-const projects = [
+interface ProjectDetail {
+  name: string
+  status: string
+  description: string
+  tech: string[]
+  details: string[]
+  achievement?: string
+  highlight?: boolean
+}
+
+const projects: ProjectDetail[] = [
   {
     name: "Determinex",
     status: "TRL 1–3 Prototype",
-    description: "FPGA-based system handling missing, duplicate, and out-of-order data streams with deterministic fault-tolerant architecture. Built to solve real-world data integrity problems in high-speed systems.",
+    description: "FPGA-based system handling missing, duplicate, and out-of-order data streams with deterministic fault-tolerant architecture.",
     tech: ["FPGA", "Verilog", "SystemVerilog", "Deterministic Systems"],
     achievement: "Submitted for Tamil Nadu Innovation & Quantum Challenge",
     highlight: true,
@@ -20,7 +29,7 @@ const projects = [
   {
     name: "Smart Shoe Prototype",
     status: "Patented",
-    description: "ESP32-based smart shoe with air-bladder sole that switches between Sport Mode (curved) and Casual Mode (flat) via mobile app. Includes health monitoring sensors.",
+    description: "ESP32-based smart shoe with air-bladder sole that switches between Sport Mode and Casual Mode via mobile app.",
     tech: ["ESP32", "IoT", "Embedded Systems", "Mobile App"],
     details: [
       "Air-bladder sole with two modes",
@@ -34,7 +43,7 @@ const projects = [
   {
     name: "Smart Water Tank Automation",
     status: "Completed",
-    description: "MQTT-based dual-mode control system with live hardware mode and simulation demo mode. Built with Node.js and Turbotic automation workflows.",
+    description: "MQTT-based dual-mode control system with live hardware mode and simulation demo mode.",
     tech: ["MQTT", "Node.js", "Turbotic"],
     details: [
       "Live hardware mode",
@@ -47,7 +56,7 @@ const projects = [
   {
     name: "Personal AI Assistant",
     status: "In Progress",
-    description: "Full-stack AI chatbot that knows everything about Madheshwaran. Built over a 9-month roadmap using React, Python Flask, and Llama 3.2.",
+    description: "Full-stack AI chatbot built over a 9-month roadmap using React, Python Flask, and Llama 3.2.",
     tech: ["React", "Python", "Flask", "Ollama", "TypeScript"],
     details: [
       "React frontend with TypeScript",
@@ -60,16 +69,6 @@ const projects = [
   }
 ]
 
-function ProjectDetail({ details }) {
-  return (
-    <ul className="project-detail-list">
-      {details.map((detail, i) => (
-        <li key={i}>{detail}</li>
-      ))}
-    </ul>
-  )
-}
-
 function ProjectsPage() {
   useEffect(() => {
     document.title = "Projects | Madheshwaran"
@@ -77,13 +76,10 @@ function ProjectsPage() {
 
   return (
     <div className="app-main">
-
-      {/* Back navigation */}
       <div className="page-nav">
         <Link to="/" className="back-link">← Back to Portfolio</Link>
       </div>
 
-      {/* Page header */}
       <div className="page-header">
         <h1 className="page-title">Projects</h1>
         <p className="page-subtitle">
@@ -92,9 +88,8 @@ function ProjectsPage() {
         </p>
       </div>
 
-      {/* Projects grid */}
       <div className="projects-full-list">
-        {projects.map((project, i) => (
+        {projects.map((project: ProjectDetail, i: number) => (
           <div key={i} className={`project-full-card ${project.highlight ? 'highlight' : ''}`}>
             <div className="project-header">
               <h3>{project.name}</h3>
@@ -104,22 +99,26 @@ function ProjectsPage() {
             {project.achievement && (
               <p className="project-achievement">🏆 {project.achievement}</p>
             )}
-            <ProjectDetail details={project.details} />
+            <ul className="project-detail-list">
+              {project.details.map((detail: string, j: number) => (
+                <li key={j}>{detail}</li>
+              ))}
+            </ul>
             <div className="project-tags">
-              {project.tech.map((t, j) => <span key={j}>{t}</span>)}
+              {project.tech.map((t: string, j: number) => (
+                <span key={j}>{t}</span>
+              ))}
             </div>
           </div>
         ))}
       </div>
 
-      {/* CTA */}
       <div className="page-cta">
         <p>Want to know more about any project?</p>
         <Link to="/chat" className="cta-btn">
           Chat with my AI →
         </Link>
       </div>
-
     </div>
   )
 }

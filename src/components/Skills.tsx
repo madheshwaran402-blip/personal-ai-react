@@ -1,21 +1,18 @@
+import React from 'react'
 import profile from '../data/profile'
-import { buildSkillsWithLevels, getSkillLevelColor } from '../utils/helpers'
 
-function SkillGroup({ title, skills }) {
-  const skillsWithLevels = buildSkillsWithLevels(skills)
+interface SkillGroupProps {
+  title: string
+  skills: string[]
+}
 
+function SkillGroup({ title, skills }: SkillGroupProps) {
   return (
     <div className="skill-group">
       <p className="skill-label">{title}</p>
       <div className="skills-grid">
-        {skillsWithLevels.map((skill, i) => (
-          <span
-            key={i}
-            className="skill-tag"
-            style={{ '--skill-color': getSkillLevelColor(skill.level) }}
-          >
-            {skill.name}
-          </span>
+        {skills.map((skill: string, i: number) => (
+          <span key={i} className="skill-tag">{skill}</span>
         ))}
       </div>
     </div>

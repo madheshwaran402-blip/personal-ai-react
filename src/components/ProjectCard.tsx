@@ -1,6 +1,22 @@
 import React from 'react'
 
-function ProjectCard({ name, status, description, tech, achievement, highlight }) {
+interface ProjectCardProps {
+  name: string
+  status: string
+  description: string
+  tech: string[]
+  achievement?: string
+  highlight?: boolean
+}
+
+function ProjectCard({
+  name,
+  status,
+  description,
+  tech,
+  achievement,
+  highlight
+}: ProjectCardProps) {
   return (
     <div className={`project-card ${highlight ? 'highlight' : ''}`}>
       <div className="project-header">
@@ -13,7 +29,9 @@ function ProjectCard({ name, status, description, tech, achievement, highlight }
       )}
       {tech && (
         <div className="project-tags">
-          {tech.map((t, i) => <span key={i}>{t}</span>)}
+          {tech.map((t: string, i: number) => (
+            <span key={i}>{t}</span>
+          ))}
         </div>
       )}
     </div>

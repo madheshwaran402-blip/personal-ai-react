@@ -15,7 +15,12 @@ function Education() {
       <div className="section-sub">
         <h2>Currently Learning</h2>
         <div className="skills-grid" style={{ marginTop: '12px' }}>
-          {["Verilog + SystemVerilog (Advanced)", "Java + Data Structures", "Linux RH104", "FPGA-based Design"].map((item, i) => (
+          {[
+            "Verilog + SystemVerilog (Advanced)",
+            "Java + Data Structures",
+            "Linux RH104",
+            "FPGA-based Design"
+          ].map((item: string, i: number) => (
             <span key={i} className="skill-tag learning">{item}</span>
           ))}
         </div>

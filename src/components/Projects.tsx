@@ -1,8 +1,16 @@
-import { motion } from 'framer-motion'
+import React from 'react'
 import ProjectCard from './ProjectCard'
-import { fadeUp, staggerContainer, staggerItem } from '../utils/animations'
 
-const projects = [
+interface Project {
+  name: string
+  status: string
+  description: string
+  tech: string[]
+  achievement?: string
+  highlight?: boolean
+}
+
+const projects: Project[] = [
   {
     name: "Determinex",
     status: "TRL 1–3 Prototype",
@@ -33,29 +41,14 @@ const projects = [
 
 function Projects() {
   return (
-    <motion.section
-      className="section"
-      id="projects"
-      variants={fadeUp}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.1 }}
-    >
+    <section className="section" id="projects">
       <h2>Projects</h2>
-      <motion.div
-        className="projects-list"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.1 }}
-      >
-        {projects.map((project, i) => (
-          <motion.div key={i} variants={staggerItem}>
-            <ProjectCard {...project} />
-          </motion.div>
+      <div className="projects-list">
+        {projects.map((project: Project, i: number) => (
+          <ProjectCard key={i} {...project} />
         ))}
-      </motion.div>
-    </motion.section>
+      </div>
+    </section>
   )
 }
 
