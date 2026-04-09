@@ -1,4 +1,3 @@
-import { useAppContext } from '../context/AppContext'
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import Message from './Message'
 import TypingIndicator from './TypingIndicator'
@@ -27,34 +26,29 @@ function ChatWindow() {
   const [history, setHistory] = useState([])
   const [isTyping, setIsTyping] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
-  // Get recruiterMode from global context instead of local state
-  const { recruiterMode, toggleRecruiterMode, visitorName } = useAppContext()
+  const [recruiterMode, setRecruiterMode] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const [showScrollBtn, setShowScrollBtn] = useState(false)
 
   const messagesEndRef = useRef(null)
   const chatMessagesRef = useRef(null)
 
-  // Auto scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages, isTyping])
 
-  // Page title
   useEffect(() => {
     document.title = unreadCount > 0
       ? `(${unreadCount}) Madheshwaran | Personal AI`
       : "Madheshwaran | VLSI & Hardware"
   }, [unreadCount])
 
-  // Reset unread on focus
   useEffect(() => {
     const handleFocus = () => setUnreadCount(0)
     window.addEventListener("focus", handleFocus)
     return () => window.removeEventListener("focus", handleFocus)
   }, [])
 
-  // Keyboard shortcuts
   useEffect(() => {
     function handleKeyDown(e) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -66,16 +60,15 @@ function ChatWindow() {
         exportChatAsText(messages)
       }
       if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
-  e.preventDefault()
-  toggleRecruiterMode()
-}
+        e.preventDefault()
+        setRecruiterMode(prev => !prev)
+      }
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages])
 
-  // ✅ FIXED — useCallback properly closed
   const handleSend = useCallback(async (userText) => {
     const userMessage = {
       id: Date.now(),
@@ -109,7 +102,6 @@ function ChatWindow() {
       history,
       recruiterMode,
 
-      // onWord
       (word) => {
         fullAnswer += word
         setMessages(prev =>
@@ -121,7 +113,6 @@ function ChatWindow() {
         )
       },
 
-      // onDone
       () => {
         setMessages(prev =>
           prev.map(msg =>
@@ -138,7 +129,6 @@ function ChatWindow() {
         ])
       },
 
-      // onError
       (errorMsg) => {
         setMessages(prev =>
           prev.map(msg =>
@@ -156,7 +146,7 @@ function ChatWindow() {
         setIsTyping(false)
       }
     )
-  }, [history, recruiterMode]) // ✅ dependency array in right place
+  }, [history, recruiterMode])
 
   function handleClear() {
     clearHistory()
@@ -164,7 +154,6 @@ function ChatWindow() {
     setUnreadCount(0)
   }
 
-  // Memoized stats
   const chatStats = useMemo(() => {
     const botMessages = messages.filter(msg => msg.sender === "bot")
     const userMessages = messages.filter(msg => msg.sender === "user")
@@ -176,15 +165,12 @@ function ChatWindow() {
     }
   }, [messages])
 
-  // Memoized suggestion handler
   const handleSuggestionSelect = useCallback((question) => {
     handleSend(question)
   }, [handleSend])
 
   return (
     <div className="chat-container">
-
-      {/* Header */}
       <div className="chat-header">
         <div className="chat-status">
           <span className={`status-dot ${backendStatus}`}></span>
@@ -197,7 +183,6 @@ function ChatWindow() {
             )}
             {backendStatus === 'checking' && "Connecting..."}
           </span>
-          {/* Chat stats powered by useMemo */}
           {!chatStats.isEmpty && (
             <span className="chat-count">
               {chatStats.userCount} asked · {chatStats.botCount} answered
@@ -206,12 +191,12 @@ function ChatWindow() {
         </div>
         <div className="chat-header-actions">
           <button
-  className={`recruiter-btn ${recruiterMode ? 'active' : ''}`}
-  onClick={toggleRecruiterMode}
-  title="Toggle recruiter mode (Cmd+R)"
->
-  👔 {recruiterMode ? 'ON' : 'Recruiter'}
-</button>
+            className={`recruiter-btn ${recruiterMode ? 'active' : ''}`}
+            onClick={() => setRecruiterMode(!recruiterMode)}
+            title="Toggle recruiter mode (Cmd+R)"
+          >
+            👔 {recruiterMode ? 'ON' : 'Recruiter'}
+          </button>
           <button
             className="export-btn"
             onClick={() => exportChatAsText(messages)}
@@ -229,7 +214,6 @@ function ChatWindow() {
         </div>
       </div>
 
-      {/* Banners */}
       {backendStatus === 'offline' && (
         <div className="offline-banner">
           ⚠️ Run: <code>ollama serve</code> then <code>python app.py</code>
@@ -241,7 +225,6 @@ function ChatWindow() {
         </div>
       )}
 
-      {/* Messages */}
       <div
         className="chat-messages"
         ref={chatMessagesRef}
@@ -265,7 +248,6 @@ function ChatWindow() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Scroll to bottom */}
       {showScrollBtn && (
         <button
           className="scroll-bottom-btn"
@@ -281,7 +263,6 @@ function ChatWindow() {
         disabled={isTyping || isStreaming || backendStatus === 'offline'}
       />
 
-      {/* Keyboard shortcuts hint */}
       <div className="shortcuts-hint">
         <span>⌘K clear</span>
         <span>⌘E export</span>

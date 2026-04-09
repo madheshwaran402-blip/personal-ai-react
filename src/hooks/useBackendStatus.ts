@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { BackendStatus } from '../data/types'
 import { checkHealth } from '../services/api'
+import { BackendStatus } from '../data/types'
 
 export function useBackendStatus() {
   const [status, setStatus] = useState<BackendStatus>("checking")
@@ -9,8 +9,9 @@ export function useBackendStatus() {
   const check = useCallback(async (): Promise<void> => {
     try {
       const health = await checkHealth()
-      const isOnline = health.backend === "running" && health.ollama === "running"
-      setStatus(isOnline ? "online" : "offline")
+      const backendOk = health.backend === "running"
+      const ollamaOk = health.ollama === "running"
+      setStatus(backendOk && ollamaOk ? "online" : "offline")
       setLastChecked(new Date())
     } catch {
       setStatus("offline")

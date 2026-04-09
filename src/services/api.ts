@@ -6,25 +6,18 @@ const BACKEND_URL: string =
 const MAX_RETRIES: number = 2
 const RETRY_DELAY: number = 1500
 
-// ============================================
-// RETRY HELPER
-// ============================================
 async function withRetry<T>(fn: () => Promise<T>, retries: number = MAX_RETRIES): Promise<T> {
   for (let i = 0; i <= retries; i++) {
     try {
       return await fn()
     } catch (error) {
       if (i === retries) throw error
-      console.log(`Retry ${i + 1}/${retries}...`)
       await new Promise(r => setTimeout(r, RETRY_DELAY))
     }
   }
   throw new Error("Max retries exceeded")
 }
 
-// ============================================
-// STREAMING
-// ============================================
 export async function sendMessageStreaming(
   message: string,
   history: HistoryItem[] = [],
@@ -76,9 +69,6 @@ export async function sendMessageStreaming(
   }
 }
 
-// ============================================
-// REGULAR WITH RETRY
-// ============================================
 export async function sendMessageToAI(
   message: string,
   history: HistoryItem[] = [],
@@ -96,9 +86,6 @@ export async function sendMessageToAI(
   })
 }
 
-// ============================================
-// HEALTH CHECK
-// ============================================
 export async function checkHealth(): Promise<HealthResponse> {
   return withRetry(async () => {
     const response = await fetch(`${BACKEND_URL}/health`, {
