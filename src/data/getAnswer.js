@@ -27,7 +27,7 @@ function getAnswer(input) {
     return `Research interests: ${profile.research.interests.join(", ")}. Goal: ${profile.research.goal}.`
   else if (text.includes("goal") || text.includes("future") || text.includes("plan"))
     return `Primary goal: ${profile.goals.primary}. Long-term: ${profile.goals.longTerm.join(", ")}.`
-  else if (text.includes("achievement") || text.includes("win") || text.includes("ideathon")) {
+  else if (text.includes("achievement") || text.includes("win") || text.includes("award") ||text.includes("ideathon")) {
     const a = profile.achievements[0]
     return `${a.title} at ${a.organizer}. Domain: ${a.domain}. Prize: ${a.prize}.`
   }
