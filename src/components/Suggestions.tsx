@@ -16,15 +16,20 @@ const chips: SuggestionChip[] = [
   { label: "🏢 Startup vision",              q: "Tell me about your startups" },
 ]
 
-// memo() — chips never change so this never re-renders unnecessarily
 const Suggestions = memo(function Suggestions({ onSelect }: SuggestionsProps) {
   return (
-    <div className="suggestions">
+    <div
+      className="suggestions"
+      role="group"
+      aria-label="Suggested questions — click to ask"
+    >
       {chips.map((chip: SuggestionChip, index: number) => (
         <button
           key={index}
           className="suggestion-chip"
           onClick={() => onSelect(chip.q)}
+          aria-label={`Ask: ${chip.q}`}
+          type="button"
         >
           {chip.label}
         </button>

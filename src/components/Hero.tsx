@@ -2,12 +2,15 @@ import React from 'react'
 
 function Hero() {
   return (
-    <section className="hero">
+    <section
+      className="hero"
+      aria-label="Profile introduction"
+    >
       <div className="hero-content">
         <div className="hero-photo">
           <img
             src="/photo.jpg"
-            alt="Madheshwaran Maruthamuthu"
+            alt="Madheshwaran Maruthamuthu — VLSI Design Student and Hardware Innovator from Tamil Nadu India"
             loading="eager"
             decoding="async"
             width="140"
@@ -15,7 +18,7 @@ function Hero() {
           />
         </div>
         <div className="hero-text">
-          <p className="greeting">Hello, I'm</p>
+          <p className="greeting" aria-hidden="true">Hello, I'm</p>
           <h1>Madheshwaran</h1>
           <p className="tagline">
             VLSI Design Student · Hardware Innovator · Neuromorphic Enthusiast
@@ -25,22 +28,34 @@ function Hero() {
             systems and neuromorphic-inspired hardware. Creator of Determinex —
             winner of IDEATHON 1.0.
           </p>
-          <div className="hero-links">
+          <nav
+            aria-label="Social links and contact"
+            className="hero-links"
+          >
             <a
               href="https://github.com/madheshwaran402-blip"
               target="_blank"
-              rel="noreferrer"
+              rel="noreferrer noopener"
               className="hero-btn"
+              aria-label="View GitHub profile (opens in new tab)"
             >
               GitHub ↗️
             </a>
-            <a href="mailto:madheshwaran402@gmail.com" className="hero-btn">
+            <a
+              href="mailto:madheshwaran402@gmail.com"
+              className="hero-btn"
+              aria-label="Send email to Madheshwaran"
+            >
               Email ↗️
             </a>
-            <a href="#chat" className="hero-btn primary">
+            <a
+              href="#chat"
+              className="hero-btn primary"
+              aria-label="Open AI chat assistant"
+            >
               Chat with my AI ↗️
             </a>
-          </div>
+          </nav>
         </div>
       </div>
     </section>

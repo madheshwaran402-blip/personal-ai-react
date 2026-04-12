@@ -170,29 +170,46 @@ function ChatWindow() {
   }, [handleSend])
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">
-        <div className="chat-status">
-          <span className={`status-dot ${backendStatus}`}></span>
+    <div
+      className="chat-container"
+      role="region"
+      aria-label="AI Chat assistant"
+    >
+      <div className="chat-header" role="toolbar" aria-label="Chat controls">
+        <div className="chat-status" aria-live="polite" aria-atomic="true">
+          <span
+            className={`status-dot ${backendStatus}`}
+            aria-hidden="true"
+          ></span>
           <span>
             {backendStatus === 'online' && `Llama 3.2 · ${recruiterMode ? '👔 Recruiter' : 'Online'}`}
             {backendStatus === 'offline' && (
-              <span className="retry-link" onClick={recheckNow}>
+              <button
+                className="retry-link"
+                onClick={recheckNow}
+                aria-label="AI is offline. Click to retry connection"
+              >
                 AI Offline — click to retry
-              </span>
+              </button>
             )}
             {backendStatus === 'checking' && "Connecting..."}
           </span>
           {!chatStats.isEmpty && (
-            <span className="chat-count">
+            <span
+              className="chat-count"
+              aria-label={`${chatStats.userCount} questions asked, ${chatStats.botCount} answered`}
+            >
               {chatStats.userCount} asked · {chatStats.botCount} answered
             </span>
           )}
         </div>
+
         <div className="chat-header-actions">
           <button
             className={`recruiter-btn ${recruiterMode ? 'active' : ''}`}
             onClick={() => setRecruiterMode(!recruiterMode)}
+            aria-pressed={recruiterMode}
+            aria-label={recruiterMode ? 'Recruiter mode is on. Click to turn off' : 'Turn on recruiter mode'}
             title="Toggle recruiter mode (Cmd+R)"
           >
             👔 {recruiterMode ? 'ON' : 'Recruiter'}
@@ -200,6 +217,7 @@ function ChatWindow() {
           <button
             className="export-btn"
             onClick={() => exportChatAsText(messages)}
+            aria-label="Export chat as text file"
             title="Export chat (Cmd+E)"
           >
             ↓ Export
@@ -207,6 +225,7 @@ function ChatWindow() {
           <button
             className="clear-btn"
             onClick={handleClear}
+            aria-label="Clear all chat messages"
             title="Clear chat (Cmd+K)"
           >
             Clear
@@ -215,12 +234,21 @@ function ChatWindow() {
       </div>
 
       {backendStatus === 'offline' && (
-        <div className="offline-banner">
+        <div
+          className="offline-banner"
+          role="alert"
+          aria-live="assertive"
+        >
           ⚠️ Run: <code>ollama serve</code> then <code>python app.py</code>
         </div>
       )}
+
       {recruiterMode && backendStatus === 'online' && (
-        <div className="recruiter-banner">
+        <div
+          className="recruiter-banner"
+          role="status"
+          aria-live="polite"
+        >
           👔 Recruiter Mode — formal tone, highlights achievements
         </div>
       )}
@@ -228,6 +256,10 @@ function ChatWindow() {
       <div
         className="chat-messages"
         ref={chatMessagesRef}
+        role="log"
+        aria-label="Chat messages"
+        aria-live="polite"
+        aria-relevant="additions"
         onScroll={(e) => {
           const el = e.target
           const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100
@@ -245,13 +277,14 @@ function ChatWindow() {
           />
         ))}
         {isTyping && <TypingIndicator />}
-        <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} aria-hidden="true" />
       </div>
 
       {showScrollBtn && (
         <button
           className="scroll-bottom-btn"
           onClick={() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })}
+          aria-label="Scroll to latest messages"
         >
           ↓ New messages
         </button>
@@ -263,7 +296,11 @@ function ChatWindow() {
         disabled={isTyping || isStreaming || backendStatus === 'offline'}
       />
 
-      <div className="shortcuts-hint">
+      <div
+        className="shortcuts-hint"
+        aria-label="Keyboard shortcuts"
+        role="note"
+      >
         <span>⌘K clear</span>
         <span>⌘E export</span>
         <span>⌘R recruiter</span>

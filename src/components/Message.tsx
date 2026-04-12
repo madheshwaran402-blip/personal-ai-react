@@ -8,7 +8,6 @@ interface MessageProps {
   failed?: boolean
 }
 
-// memo() — only re-renders if props actually changed
 const Message = memo(function Message({
   text,
   sender,
@@ -16,13 +15,34 @@ const Message = memo(function Message({
   streaming,
   failed
 }: MessageProps) {
+  const isBot = sender === "bot"
+
   return (
-    <div className={`message ${sender} ${failed ? 'failed' : ''}`}>
+    <div
+      className={`message ${sender} ${failed ? 'failed' : ''}`}
+      role="article"
+      aria-label={`${isBot ? "AI assistant" : "You"} at ${time}`}
+    >
       <span className="message-text">
         {text}
-        {streaming && <span className="stream-cursor">▊</span>}
+        {streaming && (
+          <span
+            className="stream-cursor"
+            aria-hidden="true"
+            aria-label="AI is typing"
+          >
+            ▊
+          </span>
+        )}
       </span>
-      {!streaming && <span className="message-time">{time}</span>}
+      {!streaming && (
+        <span
+          className="message-time"
+          aria-label={`Sent at ${time}`}
+        >
+          {time}
+        </span>
+      )}
     </div>
   )
 })
