@@ -1,7 +1,7 @@
 import { HistoryItem, HealthResponse } from '../data/types'
 
 const BACKEND_URL: string =
-  process.env.REACT_APP_BACKEND_URL || "http://127.0.0.1:5000"
+  import.meta.env.VITE_APP_BACKEND_URL || "http://127.0.0.1:5000"
 
 const MAX_RETRIES: number = 2
 const RETRY_DELAY: number = 1500

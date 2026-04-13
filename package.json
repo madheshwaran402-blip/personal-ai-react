@@ -10,15 +10,16 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.14.0",
-    "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "CI= react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
+"scripts": {
+  "dev": "vite",
+  "start": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "test": "react-scripts test",
+  "test:ci": "CI=true react-scripts test --watchAll=false"
+},
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -40,11 +41,13 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
     "@types/jest": "^30.0.0",
-    "@types/node": "^25.5.2",
+    "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/testing-library__jest-dom": "^5.14.9",
+    "@vitejs/plugin-react": "^6.0.1",
     "eslint-plugin-jsx-a11y": "^6.10.2",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "vite": "^8.0.8"
   }
 }
