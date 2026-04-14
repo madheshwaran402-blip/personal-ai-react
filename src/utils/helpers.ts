@@ -97,7 +97,7 @@ export function capitalize(text: string): string {
 
 // Check if running in development
 export function isDev(): boolean {
-  return import.meta.env.DEV  
+  return process.env.NODE_ENV === "development"
 }
 
 // Safe localStorage get

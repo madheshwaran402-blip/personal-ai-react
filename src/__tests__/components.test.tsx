@@ -26,11 +26,11 @@ describe('Hero component', () => {
     expect(screen.getByText(/VLSI Design Student/)).toBeInTheDocument()
   })
 
-  test('renders profile photo', () => {
-    render(<Hero />)
-    const img = screen.getByAltText('Madheshwaran Maruthamuthu')
-    expect(img).toBeInTheDocument()
-  })
+test('renders profile photo', () => {
+  render(<Hero />)
+  const img = screen.getByAltText(/Madheshwaran Maruthamuthu/)
+  expect(img).toBeInTheDocument()
+})
 
   test('renders chat button', () => {
     render(<Hero />)
