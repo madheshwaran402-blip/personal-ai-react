@@ -1,14 +1,15 @@
 import {
   truncate,
   capitalize,
-  formatDate,
   filterBy,
   findBy,
   sortBy,
   getLocalStorage,
   setLocalStorage,
   buildSkillsWithLevels,
-  getSkillLevelColor
+  getSkillLevelColor,
+  debounce,
+  throttle
 } from '../utils/helpers'
 
 // ============================================
@@ -200,5 +201,65 @@ describe('localStorage helpers', () => {
     setLocalStorage('skills', arr)
     const result = getLocalStorage<string[]>('skills', [])
     expect(result).toEqual(arr)
+  })
+})
+
+// ============================================
+// DEBOUNCE TESTS
+// ============================================
+describe('debounce', () => {
+  beforeEach(() => {
+    jest.useFakeTimers()
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
+  test('delays function execution', () => {
+    const mockFn = jest.fn()
+    const debounced = debounce(mockFn, 300)
+
+    debounced()
+    expect(mockFn).not.toHaveBeenCalled()
+
+    jest.advanceTimersByTime(300)
+    expect(mockFn).toHaveBeenCalledTimes(1)
+  })
+
+  test('cancels previous call if called again', () => {
+    const mockFn = jest.fn()
+    const debounced = debounce(mockFn, 300)
+
+    debounced()
+    debounced()
+    debounced()
+
+    jest.advanceTimersByTime(300)
+    expect(mockFn).toHaveBeenCalledTimes(1)
+  })
+})
+
+// ============================================
+// THROTTLE TESTS
+// ============================================
+describe('throttle', () => {
+  test('calls function immediately on first call', () => {
+    const mockFn = jest.fn()
+    const throttled = throttle(mockFn, 300)
+
+    throttled()
+    expect(mockFn).toHaveBeenCalledTimes(1)
+  })
+
+  test('ignores calls within limit period', () => {
+    const mockFn = jest.fn()
+    const throttled = throttle(mockFn, 300)
+
+    throttled()
+    throttled()
+    throttled()
+
+    expect(mockFn).toHaveBeenCalledTimes(1)
   })
 })
