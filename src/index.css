@@ -1109,3 +1109,36 @@ button:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ===== PERFORMANCE ===== */
+
+/* Prevent layout shift for images */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* GPU acceleration for animations */
+.chat-container,
+.app-header,
+.message {
+  will-change: auto;
+  transform: translateZ(0);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent FOUT (Flash of Unstyled Text) */
+body {
+  font-display: swap;
+}
+
+/* Content visibility for off-screen sections */
+.section {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
