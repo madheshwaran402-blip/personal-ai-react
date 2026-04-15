@@ -1,23 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import { visualizer } from 'rollup-plugin-visualizer'
 import compression from 'vite-plugin-compression'
 
 export default defineConfig({
   plugins: [
     react(),
-
     compression({
       algorithm: 'gzip',
       ext: '.gz',
       threshold: 10240
-    }),
-
-    visualizer({
-      filename: 'dist/stats.html',
-      open: false,
-      gzipSize: true,
-      brotliSize: true
     })
   ],
 
@@ -31,9 +22,13 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom']
+        manualChunks: (id: string) => {
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) {
+            return 'vendor'
+          }
+          if (id.includes('node_modules/react-router-dom') || id.includes('node_modules/react-router/')) {
+            return 'router'
+          }
         }
       }
     },
