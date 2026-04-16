@@ -19,14 +19,24 @@ export function useBackendStatus() {
     }
   }, [])
 
-  useEffect(() => { check() }, [check])
+  useEffect(() => {
+    // Delay first check by 2 seconds
+    // so page renders before backend check
+    const initialDelay = setTimeout(() => {
+      check()
+    }, 2000)
+
+    return () => clearTimeout(initialDelay)
+  }, [check])
 
   useEffect(() => {
+    // Poll every 30 seconds
     const interval = setInterval(check, 30000)
     return () => clearInterval(interval)
   }, [check])
 
   useEffect(() => {
+    // Recheck when tab gets focus
     window.addEventListener("focus", check)
     return () => window.removeEventListener("focus", check)
   }, [check])
