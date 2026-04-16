@@ -5,11 +5,13 @@ import Skills from '../components/Skills'
 import Projects from '../components/Projects'
 import Research from '../components/Research'
 import Achievements from '../components/Achievements'
+import GitHubStats from '../components/GitHubStats'
 
 function HomePage() {
   return (
     <main className="app-main">
       <Hero />
+      <GitHubStats />
       <Education />
       <Skills />
       <Projects />
