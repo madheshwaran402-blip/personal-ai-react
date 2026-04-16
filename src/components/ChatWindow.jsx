@@ -3,9 +3,9 @@ import Message from './Message'
 import TypingIndicator from './TypingIndicator'
 import Suggestions from './Suggestions'
 import ChatInput from './ChatInput'
-import { sendMessageStreaming } from '../services/api'
 import { useChatHistory } from '../hooks/useChatHistory'
 import { useBackendStatus } from '../hooks/useBackendStatus'
+import { useChatMutation } from '../hooks/useChatQuery'
 import { exportChatAsText } from '../utils/exportChat'
 
 const getTime = () =>
@@ -22,6 +22,7 @@ const INITIAL_MESSAGE = {
 function ChatWindow() {
   const { messages, setMessages, clearHistory } = useChatHistory(INITIAL_MESSAGE)
   const { status: backendStatus, recheckNow } = useBackendStatus()
+  const { mutate: sendMessage, isPending } = useChatMutation()
 
   const [history, setHistory] = useState([])
   const [isTyping, setIsTyping] = useState(false)
@@ -97,12 +98,12 @@ function ChatWindow() {
     setIsStreaming(true)
     setMessages(prev => [...prev, emptyBotMessage])
 
-    await sendMessageStreaming(
-      userText,
+    sendMessage({
+      message: userText,
       history,
       recruiterMode,
 
-      (word) => {
+      onWord: (word) => {
         fullAnswer += word
         setMessages(prev =>
           prev.map(msg =>
@@ -113,7 +114,7 @@ function ChatWindow() {
         )
       },
 
-      () => {
+      onDone: () => {
         setMessages(prev =>
           prev.map(msg =>
             msg.id === botId
@@ -129,7 +130,7 @@ function ChatWindow() {
         ])
       },
 
-      (errorMsg) => {
+      onError: (errorMsg) => {
         setMessages(prev =>
           prev.map(msg =>
             msg.id === botId
@@ -145,8 +146,8 @@ function ChatWindow() {
         setIsStreaming(false)
         setIsTyping(false)
       }
-    )
-  }, [history, recruiterMode])
+    })
+  }, [history, recruiterMode, sendMessage])
 
   function handleClear() {
     clearHistory()
@@ -168,6 +169,8 @@ function ChatWindow() {
   const handleSuggestionSelect = useCallback((question) => {
     handleSend(question)
   }, [handleSend])
+
+  const isDisabled = isTyping || isStreaming || isPending || backendStatus === 'offline'
 
   return (
     <div
@@ -209,7 +212,7 @@ function ChatWindow() {
             className={`recruiter-btn ${recruiterMode ? 'active' : ''}`}
             onClick={() => setRecruiterMode(!recruiterMode)}
             aria-pressed={recruiterMode}
-            aria-label={recruiterMode ? 'Recruiter mode is on. Click to turn off' : 'Turn on recruiter mode'}
+            aria-label={recruiterMode ? 'Recruiter mode on' : 'Turn on recruiter mode'}
             title="Toggle recruiter mode (Cmd+R)"
           >
             👔 {recruiterMode ? 'ON' : 'Recruiter'}
@@ -293,7 +296,7 @@ function ChatWindow() {
       <Suggestions onSelect={handleSuggestionSelect} />
       <ChatInput
         onSend={handleSend}
-        disabled={isTyping || isStreaming || backendStatus === 'offline'}
+        disabled={isDisabled}
       />
 
       <div

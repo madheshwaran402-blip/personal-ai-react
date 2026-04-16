@@ -1,12 +1,15 @@
+import { useCallback } from 'react'
 import { useHealthQuery } from './useHealthQuery'
+import { useQueryHelpers } from './useQueryHelpers'
 import { BackendStatus } from '../data/types'
 
 export function useBackendStatus() {
-  const { data, isLoading, refetch } = useHealthQuery()
+  const { data, isLoading, isFetching } = useHealthQuery()
+  const { invalidateHealth } = useQueryHelpers()
 
   let status: BackendStatus = 'checking'
 
-  if (isLoading) {
+  if (isLoading || isFetching && !data) {
     status = 'checking'
   } else if (data?.backend === 'running' && data?.ollama === 'running') {
     status = 'online'
@@ -14,9 +17,13 @@ export function useBackendStatus() {
     status = 'offline'
   }
 
+  const recheckNow = useCallback(() => {
+    invalidateHealth()
+  }, [invalidateHealth])
+
   return {
     status,
     lastChecked: new Date(),
-    recheckNow: refetch
+    recheckNow
   }
 }
