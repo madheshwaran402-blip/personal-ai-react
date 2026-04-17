@@ -7,11 +7,25 @@ import ChatPage from './pages/ChatPage'
 import ProjectsPage from './pages/ProjectsPage'
 import NotFoundPage from './pages/NotFoundPage'
 import ChatWindow from './components/ChatWindow'
+import ErrorBoundary from './components/ErrorBoundary'
+import Toast from './components/Toast'
+import { useToast } from './hooks/useToast'
 
 function AppLayout() {
+  const { toasts, removeToast, error: showError } = useToast()
+
   useEffect(() => {
     document.title = "Madheshwaran | VLSI & Hardware"
   }, [])
+
+  useEffect(() => {
+    function handleUnhandledRejection(event: PromiseRejectionEvent) {
+      showError('Something went wrong. Please try again.')
+      event.preventDefault()
+    }
+    window.addEventListener('unhandledrejection', handleUnhandledRejection)
+    return () => window.removeEventListener('unhandledrejection', handleUnhandledRejection)
+  }, [showError])
 
   return (
     <div className="app">
@@ -21,11 +35,15 @@ function AppLayout() {
 
       <Header />
 
+      <Toast toasts={toasts} onRemove={removeToast} />
+
       <Routes>
         <Route path="/" element={
           <>
             <main id="main-content">
-              <HomePage />
+              <ErrorBoundary>
+                <HomePage />
+              </ErrorBoundary>
               <div className="app-main" style={{ paddingTop: 0 }}>
                 <section
                   className="section"
@@ -36,7 +54,9 @@ function AppLayout() {
                   <p className="chat-subtitle">
                     Ask anything about Madheshwaran — skills, projects, research, goals.
                   </p>
-                  <ChatWindow />
+                  <ErrorBoundary>
+                    <ChatWindow />
+                  </ErrorBoundary>
                 </section>
               </div>
             </main>
@@ -55,12 +75,18 @@ function AppLayout() {
           </>
         } />
 
-        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/chat" element={
+          <ErrorBoundary>
+            <ChatPage />
+          </ErrorBoundary>
+        } />
 
         <Route path="/projects" element={
           <div className="app">
             <main id="main-content">
-              <ProjectsPage />
+              <ErrorBoundary>
+                <ProjectsPage />
+              </ErrorBoundary>
             </main>
             <footer className="footer" role="contentinfo">
               <p>Built by Madheshwaran Maruthamuthu</p>

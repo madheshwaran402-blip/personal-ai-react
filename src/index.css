@@ -1226,3 +1226,132 @@ body {
   color: #555;
   font-size: 12px;
 }
+
+/* ===== TOAST NOTIFICATIONS ===== */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 9999;
+  max-width: 360px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  animation: slideIn 0.2s ease-out;
+  border: 1px solid transparent;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.toast-success {
+  background: #0a2a1a;
+  border-color: #00ff88;
+  color: #00ff88;
+}
+
+.toast-error {
+  background: #2a0a0a;
+  border-color: #ff4444;
+  color: #ff8888;
+}
+
+.toast-info {
+  background: #0a1a2a;
+  border-color: #4488ff;
+  color: #88aaff;
+}
+
+.toast-warning {
+  background: #2a1a0a;
+  border-color: #ffaa00;
+  color: #ffcc44;
+}
+
+.toast-message {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.toast-close {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  line-height: 1;
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
+/* ===== ERROR BOUNDARY ===== */
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  min-height: 200px;
+}
+
+.error-boundary-content {
+  text-align: center;
+  max-width: 400px;
+}
+
+.error-icon {
+  font-size: 32px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.error-boundary h3 {
+  color: #fff;
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.error-message {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.error-retry-btn {
+  background: #00ff88;
+  color: #0a0a0a;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.error-retry-btn:hover {
+  background: #00cc6a;
+}
