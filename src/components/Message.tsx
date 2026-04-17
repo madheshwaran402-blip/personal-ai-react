@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, useState } from 'react'
 
 interface MessageProps {
   text: string
@@ -6,6 +6,7 @@ interface MessageProps {
   time: string
   streaming?: boolean
   failed?: boolean
+  onCopy?: (text: string) => void
 }
 
 const Message = memo(function Message({
@@ -13,8 +14,10 @@ const Message = memo(function Message({
   sender,
   time,
   streaming,
-  failed
+  failed,
+  onCopy
 }: MessageProps) {
+  const [showCopy, setShowCopy] = useState(false)
   const isBot = sender === "bot"
 
   return (
@@ -22,27 +25,32 @@ const Message = memo(function Message({
       className={`message ${sender} ${failed ? 'failed' : ''}`}
       role="article"
       aria-label={`${isBot ? "AI assistant" : "You"} at ${time}`}
+      onMouseEnter={() => setShowCopy(true)}
+      onMouseLeave={() => setShowCopy(false)}
     >
       <span className="message-text">
         {text}
         {streaming && (
-          <span
-            className="stream-cursor"
-            aria-hidden="true"
-            aria-label="AI is typing"
-          >
-            ▊
-          </span>
+          <span className="stream-cursor" aria-hidden="true">▊</span>
         )}
       </span>
-      {!streaming && (
-        <span
-          className="message-time"
-          aria-label={`Sent at ${time}`}
-        >
-          {time}
-        </span>
-      )}
+      <div className="message-footer">
+        {!streaming && (
+          <span className="message-time" aria-label={`Sent at ${time}`}>
+            {time}
+          </span>
+        )}
+        {showCopy && !streaming && onCopy && (
+          <button
+            className="copy-btn"
+            onClick={() => onCopy(text)}
+            aria-label="Copy message to clipboard"
+            title="Copy message"
+          >
+            ⧉
+          </button>
+        )}
+      </div>
     </div>
   )
 })

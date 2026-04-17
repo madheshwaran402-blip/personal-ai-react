@@ -5,24 +5,20 @@ import Suggestions from './Suggestions'
 import ChatInput from './ChatInput'
 import { useChatHistory } from '../hooks/useChatHistory'
 import { useBackendStatus } from '../hooks/useBackendStatus'
-import { useChatMutation } from '../hooks/useChatQuery'
-import { exportChatAsText } from '../utils/exportChat'
-
-const getTime = () =>
-  new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+import { useChatActions } from '../hooks/useChatActions'
+import { useMessageOptimistic } from '../hooks/useMessageOptimistic'
 
 const INITIAL_MESSAGE = {
   id: 1,
   text: "👋 Hi! I'm Madheshwaran's AI assistant powered by Llama 3.2. Ask me about his projects, skills, research, or goals!",
   sender: "bot",
-  time: getTime(),
+  time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   streaming: false
 }
 
 function ChatWindow() {
   const { messages, setMessages, clearHistory } = useChatHistory(INITIAL_MESSAGE)
   const { status: backendStatus, recheckNow } = useBackendStatus()
-  const { mutate: sendMessage, isPending } = useChatMutation()
 
   const [history, setHistory] = useState([])
   const [isTyping, setIsTyping] = useState(false)
@@ -33,6 +29,31 @@ function ChatWindow() {
 
   const messagesEndRef = useRef(null)
   const chatMessagesRef = useRef(null)
+
+  const {
+    handleClear,
+    handleUndoClear,
+    handleExport,
+    handleCopyMessage,
+    hasPreviousMessages
+  } = useChatActions({
+    messages,
+    setMessages,
+    clearHistory,
+    setHistory,
+    setUnreadCount
+  })
+
+  const { handleSend, isPending } = useMessageOptimistic({
+    messages,
+    setMessages,
+    history,
+    setHistory,
+    recruiterMode,
+    setIsTyping,
+    setIsStreaming,
+    setUnreadCount
+  })
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -58,102 +79,21 @@ function ChatWindow() {
       }
       if ((e.metaKey || e.ctrlKey) && e.key === 'e') {
         e.preventDefault()
-        exportChatAsText(messages)
+        handleExport()
       }
       if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
         e.preventDefault()
         setRecruiterMode(prev => !prev)
       }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        e.preventDefault()
+        handleUndoClear()
+      }
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [messages])
-
-  const handleSend = useCallback(async (userText) => {
-    const userMessage = {
-      id: Date.now(),
-      text: userText,
-      sender: "user",
-      time: getTime(),
-      streaming: false
-    }
-    setMessages(prev => [...prev, userMessage])
-    setIsTyping(true)
-
-    const botId = Date.now() + 1
-    const emptyBotMessage = {
-      id: botId,
-      text: "",
-      sender: "bot",
-      time: getTime(),
-      streaming: true
-    }
-
-    const updatedHistory = [...history, { role: "user", content: userText }]
-    let fullAnswer = ""
-
-    await new Promise(resolve => setTimeout(resolve, 300))
-    setIsTyping(false)
-    setIsStreaming(true)
-    setMessages(prev => [...prev, emptyBotMessage])
-
-    sendMessage({
-      message: userText,
-      history,
-      recruiterMode,
-
-      onWord: (word) => {
-        fullAnswer += word
-        setMessages(prev =>
-          prev.map(msg =>
-            msg.id === botId
-              ? { ...msg, text: fullAnswer, streaming: true }
-              : msg
-          )
-        )
-      },
-
-      onDone: () => {
-        setMessages(prev =>
-          prev.map(msg =>
-            msg.id === botId
-              ? { ...msg, streaming: false }
-              : msg
-          )
-        )
-        setIsStreaming(false)
-        setUnreadCount(prev => prev + 1)
-        setHistory([
-          ...updatedHistory,
-          { role: "assistant", content: fullAnswer }
-        ])
-      },
-
-      onError: (errorMsg) => {
-        setMessages(prev =>
-          prev.map(msg =>
-            msg.id === botId
-              ? {
-                  ...msg,
-                  text: `⚠️ ${errorMsg || "Could not reach AI. Make sure Flask and Ollama are running."}`,
-                  streaming: false,
-                  failed: true
-                }
-              : msg
-          )
-        )
-        setIsStreaming(false)
-        setIsTyping(false)
-      }
-    })
-  }, [history, recruiterMode, sendMessage])
-
-  function handleClear() {
-    clearHistory()
-    setHistory([])
-    setUnreadCount(0)
-  }
+  }, [handleClear, handleExport, handleUndoClear])
 
   const chatStats = useMemo(() => {
     const botMessages = messages.filter(msg => msg.sender === "bot")
@@ -198,10 +138,7 @@ function ChatWindow() {
             {backendStatus === 'checking' && "Connecting..."}
           </span>
           {!chatStats.isEmpty && (
-            <span
-              className="chat-count"
-              aria-label={`${chatStats.userCount} questions asked, ${chatStats.botCount} answered`}
-            >
+            <span className="chat-count">
               {chatStats.userCount} asked · {chatStats.botCount} answered
             </span>
           )}
@@ -212,15 +149,14 @@ function ChatWindow() {
             className={`recruiter-btn ${recruiterMode ? 'active' : ''}`}
             onClick={() => setRecruiterMode(!recruiterMode)}
             aria-pressed={recruiterMode}
-            aria-label={recruiterMode ? 'Recruiter mode on' : 'Turn on recruiter mode'}
             title="Toggle recruiter mode (Cmd+R)"
           >
             👔 {recruiterMode ? 'ON' : 'Recruiter'}
           </button>
           <button
             className="export-btn"
-            onClick={() => exportChatAsText(messages)}
-            aria-label="Export chat as text file"
+            onClick={handleExport}
+            aria-label="Export chat"
             title="Export chat (Cmd+E)"
           >
             ↓ Export
@@ -228,30 +164,32 @@ function ChatWindow() {
           <button
             className="clear-btn"
             onClick={handleClear}
-            aria-label="Clear all chat messages"
+            aria-label="Clear chat"
             title="Clear chat (Cmd+K)"
           >
             Clear
           </button>
+          {hasPreviousMessages && (
+            <button
+              className="undo-btn"
+              onClick={handleUndoClear}
+              aria-label="Undo clear"
+              title="Undo clear (Cmd+Z)"
+            >
+              ↩ Undo
+            </button>
+          )}
         </div>
       </div>
 
       {backendStatus === 'offline' && (
-        <div
-          className="offline-banner"
-          role="alert"
-          aria-live="assertive"
-        >
+        <div className="offline-banner" role="alert" aria-live="assertive">
           ⚠️ Run: <code>ollama serve</code> then <code>python app.py</code>
         </div>
       )}
 
       {recruiterMode && backendStatus === 'online' && (
-        <div
-          className="recruiter-banner"
-          role="status"
-          aria-live="polite"
-        >
+        <div className="recruiter-banner" role="status" aria-live="polite">
           👔 Recruiter Mode — formal tone, highlights achievements
         </div>
       )}
@@ -277,6 +215,7 @@ function ChatWindow() {
             time={msg.time}
             streaming={msg.streaming}
             failed={msg.failed}
+            onCopy={handleCopyMessage}
           />
         ))}
         {isTyping && <TypingIndicator />}
@@ -294,17 +233,11 @@ function ChatWindow() {
       )}
 
       <Suggestions onSelect={handleSuggestionSelect} />
-      <ChatInput
-        onSend={handleSend}
-        disabled={isDisabled}
-      />
+      <ChatInput onSend={handleSend} disabled={isDisabled} />
 
-      <div
-        className="shortcuts-hint"
-        aria-label="Keyboard shortcuts"
-        role="note"
-      >
+      <div className="shortcuts-hint" role="note">
         <span>⌘K clear</span>
+        <span>⌘Z undo</span>
         <span>⌘E export</span>
         <span>⌘R recruiter</span>
       </div>

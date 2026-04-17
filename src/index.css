@@ -1355,3 +1355,50 @@ body {
 .error-retry-btn:hover {
   background: #00cc6a;
 }
+
+/* ===== OPTIMISTIC UPDATE STYLES ===== */
+.undo-btn {
+  background: transparent;
+  border: 1px solid #333;
+  color: #666;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.undo-btn:hover {
+  border-color: #00ff88;
+  color: #00ff88;
+}
+
+/* ===== COPY BUTTON ===== */
+.message-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.copy-btn {
+  background: transparent;
+  border: none;
+  color: #444;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.2s;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.message:hover .copy-btn {
+  opacity: 1;
+}
+
+.copy-btn:hover {
+  color: #00ff88;
+}
