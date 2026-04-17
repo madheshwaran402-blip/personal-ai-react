@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import QueryStatus from './QueryStatus'
 
 function Header() {
   const [scrolled, setScrolled] = useState<boolean>(false)
@@ -27,22 +28,23 @@ function Header() {
             M<span className="dot">.</span>
           </span>
         </Link>
+        <QueryStatus />
       </div>
 
       <nav aria-label="Main navigation">
         {isHome ? (
           <>
-            <a href="#education" aria-label="Go to Education section">Education</a>
-            <a href="#skills" aria-label="Go to Skills section">Skills</a>
-            <a href="#projects" aria-label="Go to Projects section">Projects</a>
-            <a href="#research" aria-label="Go to Research section">Research</a>
-            <a href="#chat" aria-label="Go to Chat section">Chat</a>
+            <a href="#education">Education</a>
+            <a href="#skills">Skills</a>
+            <a href="#projects">Projects</a>
+            <a href="#research">Research</a>
+            <a href="#chat">Chat</a>
           </>
         ) : (
           <>
-            <Link to="/" aria-label="Go to Home page">Home</Link>
-            <Link to="/projects" aria-label="Go to Projects page">Projects</Link>
-            <Link to="/chat" aria-label="Go to Chat page">Chat</Link>
+            <Link to="/">Home</Link>
+            <Link to="/projects">Projects</Link>
+            <Link to="/chat">Chat</Link>
           </>
         )}
       </nav>

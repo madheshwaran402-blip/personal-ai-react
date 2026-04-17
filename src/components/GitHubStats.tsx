@@ -1,28 +1,19 @@
 import React from 'react'
-import { useGitHubUserQuery, useGitHubReposQuery } from '../hooks/useGitHubQuery'
+import { usePortfolioData } from '../hooks/useParallelQueries'
 
 function GitHubStats() {
-  const {
-    data: user,
-    isLoading: userLoading,
-    error: userError
-  } = useGitHubUserQuery()
+  const { githubUser, githubRepos, isLoading, isError } = usePortfolioData()
 
-  const {
-    data: repos,
-    isLoading: reposLoading
-  } = useGitHubReposQuery()
-
-  if (userLoading || reposLoading) {
+  if (isLoading) {
     return (
-      <div className="github-stats loading">
+      <div className="github-stats loading" aria-busy="true" aria-label="Loading GitHub stats">
         <div className="skeleton-line"></div>
         <div className="skeleton-line short"></div>
       </div>
     )
   }
 
-  if (userError) {
+  if (isError || !githubUser) {
     return null
   }
 
@@ -35,39 +26,35 @@ function GitHubStats() {
           target="_blank"
           rel="noreferrer noopener"
           className="github-link"
-          aria-label="View GitHub profile"
+          aria-label="View GitHub profile (opens in new tab)"
         >
           GitHub Activity
         </a>
       </div>
 
-      {user && (
-        <div className="github-meta">
-          <span>{user.public_repos} repos</span>
-          <span>·</span>
-          <span>{user.followers} followers</span>
-        </div>
-      )}
+      <div className="github-meta">
+        <span>{githubUser.public_repos} repos</span>
+        <span>·</span>
+        <span>{githubUser.followers} followers</span>
+      </div>
 
-      {repos && repos.length > 0 && (
+      {githubRepos && githubRepos.length > 0 && (
         <div className="github-repos">
-          {repos.slice(0, 3).map(repo => (
+          {githubRepos.slice(0, 3).map(repo => (
             <a
               key={repo.name}
               href={repo.html_url}
               target="_blank"
               rel="noreferrer noopener"
               className="github-repo-card"
-              aria-label={`View ${repo.name} on GitHub`}
+              aria-label={`View ${repo.name} repository on GitHub`}
             >
               <span className="repo-name">{repo.name}</span>
               {repo.language && (
                 <span className="repo-lang">{repo.language}</span>
               )}
               {repo.stargazers_count > 0 && (
-                <span className="repo-stars">
-                  ★ {repo.stargazers_count}
-                </span>
+                <span className="repo-stars">★ {repo.stargazers_count}</span>
               )}
             </a>
           ))}
