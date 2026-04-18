@@ -1,31 +1,34 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { useEffect, useRef, useMemo, useCallback } from 'react'
 import Message from './Message'
 import TypingIndicator from './TypingIndicator'
 import Suggestions from './Suggestions'
 import ChatInput from './ChatInput'
-import { useChatHistory } from '../hooks/useChatHistory'
+import { useChatStore } from '../stores/chatStore'
 import { useBackendStatus } from '../hooks/useBackendStatus'
 import { useChatActions } from '../hooks/useChatActions'
 import { useMessageOptimistic } from '../hooks/useMessageOptimistic'
 
-const INITIAL_MESSAGE = {
-  id: 1,
-  text: "👋 Hi! I'm Madheshwaran's AI assistant powered by Llama 3.2. Ask me about his projects, skills, research, or goals!",
-  sender: "bot",
-  time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-  streaming: false
-}
-
 function ChatWindow() {
-  const { messages, setMessages, clearHistory } = useChatHistory(INITIAL_MESSAGE)
-  const { status: backendStatus, recheckNow } = useBackendStatus()
+  const {
+    messages,
+    setMessages,
+    history,
+    setHistory,
+    isTyping,
+    setIsTyping,
+    isStreaming,
+    setIsStreaming,
+    unreadCount,
+    incrementUnread,
+    resetUnread,
+    showScrollBtn,
+    setShowScrollBtn,
+    recruiterMode,
+    toggleRecruiterMode,
+    clearChat
+  } = useChatStore()
 
-  const [history, setHistory] = useState([])
-  const [isTyping, setIsTyping] = useState(false)
-  const [isStreaming, setIsStreaming] = useState(false)
-  const [recruiterMode, setRecruiterMode] = useState(false)
-  const [unreadCount, setUnreadCount] = useState(0)
-  const [showScrollBtn, setShowScrollBtn] = useState(false)
+  const { status: backendStatus, recheckNow } = useBackendStatus()
 
   const messagesEndRef = useRef(null)
   const chatMessagesRef = useRef(null)
@@ -39,9 +42,9 @@ function ChatWindow() {
   } = useChatActions({
     messages,
     setMessages,
-    clearHistory,
+    clearHistory: clearChat,
     setHistory,
-    setUnreadCount
+    setUnreadCount: resetUnread
   })
 
   const { handleSend, isPending } = useMessageOptimistic({
@@ -52,7 +55,7 @@ function ChatWindow() {
     recruiterMode,
     setIsTyping,
     setIsStreaming,
-    setUnreadCount
+    setUnreadCount: incrementUnread
   })
 
   useEffect(() => {
@@ -66,10 +69,9 @@ function ChatWindow() {
   }, [unreadCount])
 
   useEffect(() => {
-    const handleFocus = () => setUnreadCount(0)
-    window.addEventListener("focus", handleFocus)
-    return () => window.removeEventListener("focus", handleFocus)
-  }, [])
+    window.addEventListener("focus", resetUnread)
+    return () => window.removeEventListener("focus", resetUnread)
+  }, [resetUnread])
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -83,7 +85,7 @@ function ChatWindow() {
       }
       if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
         e.preventDefault()
-        setRecruiterMode(prev => !prev)
+        toggleRecruiterMode()
       }
       if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
         e.preventDefault()
@@ -93,13 +95,12 @@ function ChatWindow() {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleClear, handleExport, handleUndoClear])
+  }, [handleClear, handleExport, handleUndoClear, toggleRecruiterMode])
 
   const chatStats = useMemo(() => {
     const botMessages = messages.filter(msg => msg.sender === "bot")
     const userMessages = messages.filter(msg => msg.sender === "user")
     return {
-      total: messages.length,
       botCount: botMessages.length,
       userCount: userMessages.length,
       isEmpty: messages.length <= 1
@@ -130,7 +131,7 @@ function ChatWindow() {
               <button
                 className="retry-link"
                 onClick={recheckNow}
-                aria-label="AI is offline. Click to retry connection"
+                aria-label="AI offline. Click to retry"
               >
                 AI Offline — click to retry
               </button>
@@ -147,7 +148,7 @@ function ChatWindow() {
         <div className="chat-header-actions">
           <button
             className={`recruiter-btn ${recruiterMode ? 'active' : ''}`}
-            onClick={() => setRecruiterMode(!recruiterMode)}
+            onClick={toggleRecruiterMode}
             aria-pressed={recruiterMode}
             title="Toggle recruiter mode (Cmd+R)"
           >
@@ -174,7 +175,7 @@ function ChatWindow() {
               className="undo-btn"
               onClick={handleUndoClear}
               aria-label="Undo clear"
-              title="Undo clear (Cmd+Z)"
+              title="Undo (Cmd+Z)"
             >
               ↩ Undo
             </button>

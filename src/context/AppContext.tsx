@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useEffect, ReactNode } from 'react'
+import { useAppStore } from '../stores/appStore'
 import { Theme } from '../data/types'
 
 interface AppContextType {
@@ -13,61 +14,50 @@ interface AppContextType {
   setMenuOpen: (value: boolean) => void
 }
 
+const AppContext = createContext<AppContextType | null>(null)
+
 interface AppProviderProps {
   children: ReactNode
 }
 
-const AppContext = createContext<AppContextType | null>(null)
-
 export function AppProvider({ children }: AppProviderProps) {
-  const [recruiterMode, setRecruiterMode] = useState<boolean>(false)
-  const [theme, setTheme] = useState<Theme>('dark')
-  const [visitorName, setVisitorName] = useState<string>('')
-  const [menuOpen, setMenuOpen] = useState<boolean>(false)
+  const store = useAppStore()
 
+  // Load persisted values on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('visitor')
-      if (saved) {
-        const visitor = JSON.parse(saved)
-        setVisitorName(visitor.name || '')
+      const savedRecruiter = localStorage.getItem('recruiterMode')
+      if (savedRecruiter) {
+        store.setRecruiterMode(JSON.parse(savedRecruiter))
+      }
+      const savedVisitor = localStorage.getItem('visitor')
+      if (savedVisitor) {
+        const visitor = JSON.parse(savedVisitor)
+        store.setVisitorName(visitor.name || '')
       }
     } catch {
       // ignore
     }
   }, [])
 
+  // Persist recruiter mode changes
   useEffect(() => {
-    localStorage.setItem('recruiterMode', JSON.stringify(recruiterMode))
-  }, [recruiterMode])
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('recruiterMode')
-      if (saved) setRecruiterMode(JSON.parse(saved))
-    } catch {
-      // ignore
-    }
-  }, [])
-
-  function toggleRecruiterMode(): void {
-    setRecruiterMode(prev => !prev)
-  }
-
-  function toggleTheme(): void {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark')
-  }
+    localStorage.setItem(
+      'recruiterMode',
+      JSON.stringify(store.recruiterMode)
+    )
+  }, [store.recruiterMode])
 
   const value: AppContextType = {
-    recruiterMode,
-    setRecruiterMode,
-    toggleRecruiterMode,
-    theme,
-    toggleTheme,
-    visitorName,
-    setVisitorName,
-    menuOpen,
-    setMenuOpen
+    recruiterMode: store.recruiterMode,
+    setRecruiterMode: store.setRecruiterMode,
+    toggleRecruiterMode: store.toggleRecruiterMode,
+    theme: store.theme,
+    toggleTheme: store.toggleTheme,
+    visitorName: store.visitorName,
+    setVisitorName: store.setVisitorName,
+    menuOpen: store.menuOpen,
+    setMenuOpen: store.setMenuOpen
   }
 
   return (
