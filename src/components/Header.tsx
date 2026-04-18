@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAppStore } from '../stores/appStore'
 import QueryStatus from './QueryStatus'
+import ScrollProgress from './ScrollProgress'
 
 function Header() {
   const [scrolled, setScrolled] = useState<boolean>(false)
@@ -23,6 +24,8 @@ function Header() {
       className={`app-header ${scrolled ? 'scrolled' : ''}`}
       role="banner"
     >
+      <ScrollProgress />
+
       <div className="header-left">
         <Link
           to="/"
@@ -59,7 +62,6 @@ function Header() {
           className={`nav-recruiter-btn ${recruiterMode ? 'active' : ''}`}
           onClick={toggleRecruiterMode}
           aria-pressed={recruiterMode}
-          aria-label={recruiterMode ? 'Recruiter mode on' : 'Recruiter mode off'}
           title="Toggle recruiter mode"
         >
           {recruiterMode ? '👔 ON' : '👔'}

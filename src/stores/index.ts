@@ -15,3 +15,17 @@ export {
   selectUnreadCount,
   selectRecruiterMode as selectChatRecruiterMode
 } from './chatStore'
+
+export {
+  useUIStore,
+  selectActiveSection,
+  selectScrollProgress,
+  selectPageTitle
+} from './uiStore'
+
+export {
+  useAnalyticsStore,
+  selectTotalMessages,
+  selectMostAskedTopics,
+  selectTopInsights
+} from './analyticsStore'

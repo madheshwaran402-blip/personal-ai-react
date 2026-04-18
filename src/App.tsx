@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AppProvider } from './context/AppContext'
 import Header from './components/Header'
 import HomePage from './pages/HomePage'
@@ -10,13 +10,20 @@ import ChatWindow from './components/ChatWindow'
 import ErrorBoundary from './components/ErrorBoundary'
 import Toast from './components/Toast'
 import { useToast } from './hooks/useToast'
+import { useAnalytics } from './hooks/useAnalytics'
 
 function AppLayout() {
   const { toasts, removeToast, error: showError } = useToast()
+  const { trackPageView } = useAnalytics()
+  const location = useLocation()
 
   useEffect(() => {
     document.title = "Madheshwaran | VLSI & Hardware"
   }, [])
+
+  useEffect(() => {
+    trackPageView(location.pathname)
+  }, [location.pathname, trackPageView])
 
   useEffect(() => {
     function handleUnhandledRejection(event: PromiseRejectionEvent) {
@@ -34,7 +41,6 @@ function AppLayout() {
       </a>
 
       <Header />
-
       <Toast toasts={toasts} onRemove={removeToast} />
 
       <Routes>
