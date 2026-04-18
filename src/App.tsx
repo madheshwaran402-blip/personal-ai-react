@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage'
 import ChatPage from './pages/ChatPage'
 import ProjectsPage from './pages/ProjectsPage'
 import NotFoundPage from './pages/NotFoundPage'
+import StatusPage from './pages/StatusPage'
 import ChatWindow from './components/ChatWindow'
 import ErrorBoundary from './components/ErrorBoundary'
 import Toast from './components/Toast'
@@ -31,7 +32,10 @@ function AppLayout() {
       event.preventDefault()
     }
     window.addEventListener('unhandledrejection', handleUnhandledRejection)
-    return () => window.removeEventListener('unhandledrejection', handleUnhandledRejection)
+    return () => window.removeEventListener(
+      'unhandledrejection',
+      handleUnhandledRejection
+    )
   }, [showError])
 
   return (
@@ -76,7 +80,12 @@ function AppLayout() {
                   madheshwaran402@gmail.com
                 </a>
               </p>
-              <p className="footer-sub">Powered by React · Llama 3.2</p>
+              <p className="footer-sub">
+                Powered by React · Llama 3.2 ·{' '}
+                <Link to="/status" className="footer-link">
+                  System Status
+                </Link>
+              </p>
             </footer>
           </>
         } />
@@ -98,6 +107,12 @@ function AppLayout() {
               <p>Built by Madheshwaran Maruthamuthu</p>
             </footer>
           </div>
+        } />
+
+        <Route path="/status" element={
+          <ErrorBoundary>
+            <StatusPage />
+          </ErrorBoundary>
         } />
 
         <Route path="*" element={<NotFoundPage />} />
