@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, ReactNode } from 'react'
+import { createContext, useContext, ReactNode } from 'react'
 import { useAppStore } from '../stores/appStore'
 import { Theme } from '../data/types'
 
@@ -22,31 +22,6 @@ interface AppProviderProps {
 
 export function AppProvider({ children }: AppProviderProps) {
   const store = useAppStore()
-
-  // Load persisted values on mount
-  useEffect(() => {
-    try {
-      const savedRecruiter = localStorage.getItem('recruiterMode')
-      if (savedRecruiter) {
-        store.setRecruiterMode(JSON.parse(savedRecruiter))
-      }
-      const savedVisitor = localStorage.getItem('visitor')
-      if (savedVisitor) {
-        const visitor = JSON.parse(savedVisitor)
-        store.setVisitorName(visitor.name || '')
-      }
-    } catch {
-      // ignore
-    }
-  }, [])
-
-  // Persist recruiter mode changes
-  useEffect(() => {
-    localStorage.setItem(
-      'recruiterMode',
-      JSON.stringify(store.recruiterMode)
-    )
-  }, [store.recruiterMode])
 
   const value: AppContextType = {
     recruiterMode: store.recruiterMode,

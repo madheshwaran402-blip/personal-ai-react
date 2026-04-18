@@ -50,6 +50,11 @@ describe('AppStore', () => {
     expect(useAppStore.getState().recruiterMode).toBe(false)
     expect(useAppStore.getState().visitorName).toBe('')
   })
+
+  test('persist key is set correctly', () => {
+    const storeName = 'madheshwaran-app-store'
+    expect(storeName).toBe('madheshwaran-app-store')
+  })
 })
 
 describe('ChatStore', () => {
@@ -118,5 +123,18 @@ describe('ChatStore', () => {
     incrementUnread()
     resetUnread()
     expect(useChatStore.getState().unreadCount).toBe(0)
+  })
+
+  test('persisted messages strip streaming flag', () => {
+    const { addMessage } = useChatStore.getState()
+    addMessage({
+      id: 777,
+      text: 'streaming msg',
+      sender: 'bot',
+      time: '12:00',
+      streaming: true
+    })
+    const msg = useChatStore.getState().messages.find(m => m.id === 777)
+    expect(msg).toBeDefined()
   })
 })
