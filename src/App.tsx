@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, useLocation, Link } from 'react-router-dom'
 import { AppProvider } from './context/AppContext'
 import Header from './components/Header'
 import HomePage from './pages/HomePage'

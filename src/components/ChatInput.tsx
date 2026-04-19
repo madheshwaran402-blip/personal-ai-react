@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import VoiceButton from './VoiceButton'
 
 interface ChatInputProps {
   onSend: (text: string) => void
@@ -15,6 +16,11 @@ function ChatInput({ onSend, disabled }: ChatInputProps) {
     if (inputText.trim() === "" || disabled) return
     onSend(inputText.trim())
     setInputText("")
+    inputRef.current?.focus()
+  }
+
+  function handleVoiceTranscript(text: string): void {
+    setInputText(text)
     inputRef.current?.focus()
   }
 
@@ -53,15 +59,23 @@ function ChatInput({ onSend, disabled }: ChatInputProps) {
           aria-describedby={isNearLimit ? "char-count" : undefined}
           autoComplete="off"
         />
+
+        <VoiceButton
+          onTranscript={handleVoiceTranscript}
+          disabled={disabled}
+        />
+
         <button
           onClick={handleSend}
           disabled={disabled || isOverLimit || inputText.trim() === ""}
-          aria-label={disabled ? "Sending message, please wait" : "Send message"}
+          aria-label={disabled ? "Sending message" : "Send message"}
           aria-busy={disabled}
+          type="button"
         >
           {disabled ? "..." : "Send ↑"}
         </button>
       </div>
+
       {isNearLimit && (
         <div
           id="char-count"

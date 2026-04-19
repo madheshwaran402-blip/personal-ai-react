@@ -1,4 +1,5 @@
 import React, { memo, useState } from 'react'
+import SpeakerButton from './SpeakerButton'
 
 interface MessageProps {
   text: string
@@ -17,38 +18,56 @@ const Message = memo(function Message({
   failed,
   onCopy
 }: MessageProps) {
-  const [showCopy, setShowCopy] = useState(false)
+  const [showActions, setShowActions] = useState(false)
   const isBot = sender === "bot"
+  const messageId = Math.random()
 
   return (
     <div
       className={`message ${sender} ${failed ? 'failed' : ''}`}
       role="article"
       aria-label={`${isBot ? "AI assistant" : "You"} at ${time}`}
-      onMouseEnter={() => setShowCopy(true)}
-      onMouseLeave={() => setShowCopy(false)}
+      onMouseEnter={() => setShowActions(true)}
+      onMouseLeave={() => setShowActions(false)}
     >
       <span className="message-text">
         {text}
         {streaming && (
-          <span className="stream-cursor" aria-hidden="true">▊</span>
+          <span
+            className="stream-cursor"
+            aria-hidden="true"
+          >
+            ▊
+          </span>
         )}
       </span>
+
       <div className="message-footer">
         {!streaming && (
-          <span className="message-time" aria-label={`Sent at ${time}`}>
+          <span
+            className="message-time"
+            aria-label={`Sent at ${time}`}
+          >
             {time}
           </span>
         )}
-        {showCopy && !streaming && onCopy && (
-          <button
-            className="copy-btn"
-            onClick={() => onCopy(text)}
-            aria-label="Copy message to clipboard"
-            title="Copy message"
-          >
-            ⧉
-          </button>
+
+        {showActions && !streaming && (
+          <div className="message-actions">
+            {isBot && (
+              <SpeakerButton text={text} messageId={messageId} />
+            )}
+            {onCopy && (
+              <button
+                className="copy-btn"
+                onClick={() => onCopy(text)}
+                aria-label="Copy message"
+                type="button"
+              >
+                ⧉
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>
