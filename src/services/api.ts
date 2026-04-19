@@ -1,21 +1,15 @@
 import { HistoryItem, HealthResponse } from '../data/types'
 
 const BACKEND_URL: string =
-  import.meta.env.VITE_APP_BACKEND_URL || "http://127.0.0.1:5000"
+  import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:5000"
 
-const MAX_RETRIES: number = 2
-const RETRY_DELAY: number = 1500
-
-async function withRetry<T>(fn: () => Promise<T>, retries: number = MAX_RETRIES): Promise<T> {
-  for (let i = 0; i <= retries; i++) {
-    try {
-      return await fn()
-    } catch (error) {
-      if (i === retries) throw error
-      await new Promise(r => setTimeout(r, RETRY_DELAY))
-    }
+function getSessionId(): string {
+  let sessionId = localStorage.getItem('chat_session_id')
+  if (!sessionId) {
+    sessionId = `session_${Date.now()}_${Math.random().toString(36).slice(2)}`
+    localStorage.setItem('chat_session_id', sessionId)
   }
-  throw new Error("Max retries exceeded")
+  return sessionId
 }
 
 export async function sendMessageStreaming(
@@ -30,7 +24,12 @@ export async function sendMessageStreaming(
     const response = await fetch(`${BACKEND_URL}/chat/stream`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, history, recruiterMode })
+      body: JSON.stringify({
+        message,
+        history,
+        recruiterMode,
+        sessionId: getSessionId()
+      })
     })
 
     if (!response.ok) {
@@ -69,28 +68,9 @@ export async function sendMessageStreaming(
   }
 }
 
-export async function sendMessageToAI(
-  message: string,
-  history: HistoryItem[] = [],
-  recruiterMode: boolean = false
-): Promise<string> {
-  return withRetry(async () => {
-    const response = await fetch(`${BACKEND_URL}/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, history, recruiterMode })
-    })
-    if (!response.ok) throw new Error(`Backend error: ${response.status}`)
-    const data = await response.json()
-    return data.answer as string
-  })
-}
-
 export async function checkHealth(): Promise<HealthResponse> {
-  return withRetry(async () => {
-    const response = await fetch(`${BACKEND_URL}/health`, {
-      signal: AbortSignal.timeout(5000)
-    })
-    return await response.json() as HealthResponse
-  }, 1)
+  const response = await fetch(`${BACKEND_URL}/health`, {
+    signal: AbortSignal.timeout(5000)
+  })
+  return await response.json() as HealthResponse
 }
