@@ -3,10 +3,13 @@ import Message from './Message'
 import TypingIndicator from './TypingIndicator'
 import Suggestions from './Suggestions'
 import ChatInput from './ChatInput'
+import VoiceSettings from './VoiceSettings'
 import { useChatStore } from '../stores/chatStore'
 import { useBackendStatus } from '../hooks/useBackendStatus'
 import { useChatActions } from '../hooks/useChatActions'
 import { useMessageOptimistic } from '../hooks/useMessageOptimistic'
+import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis'
+import { useVoiceSettings } from '../hooks/useVoiceSettings'
 
 function ChatWindow() {
   const {
@@ -29,9 +32,12 @@ function ChatWindow() {
   } = useChatStore()
 
   const { status: backendStatus, recheckNow } = useBackendStatus()
+  const { speak, cancel, isSpeaking } = useSpeechSynthesis()
+  const { autoSpeak } = useVoiceSettings()
 
   const messagesEndRef = useRef(null)
   const chatMessagesRef = useRef(null)
+  const prevMessageCountRef = useRef(messages.length)
 
   const {
     handleClear,
@@ -73,6 +79,28 @@ function ChatWindow() {
     return () => window.removeEventListener("focus", resetUnread)
   }, [resetUnread])
 
+  // Auto-speak new bot messages
+  useEffect(() => {
+    if (!autoSpeak) return
+    if (messages.length <= prevMessageCountRef.current) {
+      prevMessageCountRef.current = messages.length
+      return
+    }
+
+    prevMessageCountRef.current = messages.length
+
+    const lastMessage = messages[messages.length - 1]
+    if (
+      lastMessage &&
+      lastMessage.sender === 'bot' &&
+      !lastMessage.streaming &&
+      lastMessage.text &&
+      !lastMessage.failed
+    ) {
+      speak(lastMessage.text)
+    }
+  }, [messages, autoSpeak, speak])
+
   useEffect(() => {
     function handleKeyDown(e) {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -91,11 +119,15 @@ function ChatWindow() {
         e.preventDefault()
         handleUndoClear()
       }
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault()
+        if (isSpeaking) cancel()
+      }
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleClear, handleExport, handleUndoClear, toggleRecruiterMode])
+  }, [handleClear, handleExport, handleUndoClear, toggleRecruiterMode, isSpeaking, cancel])
 
   const chatStats = useMemo(() => {
     const botMessages = messages.filter(msg => msg.sender === "bot")
@@ -146,6 +178,7 @@ function ChatWindow() {
         </div>
 
         <div className="chat-header-actions">
+          <VoiceSettings />
           <button
             className={`recruiter-btn ${recruiterMode ? 'active' : ''}`}
             onClick={toggleRecruiterMode}
@@ -241,6 +274,7 @@ function ChatWindow() {
         <span>⌘Z undo</span>
         <span>⌘E export</span>
         <span>⌘R recruiter</span>
+        <span>⌘S stop voice</span>
       </div>
     </div>
   )

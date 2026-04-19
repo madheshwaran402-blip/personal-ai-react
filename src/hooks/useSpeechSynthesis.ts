@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useVoiceSettings } from './useVoiceSettings'
 
 interface SpeechSynthesisState {
   isSpeaking: boolean
   isPaused: boolean
   isSupported: boolean
   voices: SpeechSynthesisVoice[]
-  selectedVoice: SpeechSynthesisVoice | null
 }
 
 interface UseSpeechSynthesisReturn extends SpeechSynthesisState {
@@ -13,7 +13,6 @@ interface UseSpeechSynthesisReturn extends SpeechSynthesisState {
   pause: () => void
   resume: () => void
   cancel: () => void
-  setVoice: (voice: SpeechSynthesisVoice) => void
 }
 
 export function useSpeechSynthesis(): UseSpeechSynthesisReturn {
@@ -21,34 +20,20 @@ export function useSpeechSynthesis(): UseSpeechSynthesisReturn {
     isSpeaking: false,
     isPaused: false,
     isSupported: false,
-    voices: [],
-    selectedVoice: null
+    voices: []
   })
 
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null)
+  const { rate, pitch, volume, selectedVoiceName } = useVoiceSettings()
 
   useEffect(() => {
-    if (!window.speechSynthesis) {
-      return
-    }
+    if (!window.speechSynthesis) return
 
     setState(prev => ({ ...prev, isSupported: true }))
 
     function loadVoices() {
       const available = window.speechSynthesis.getVoices()
       if (available.length === 0) return
-
-      const preferred = available.find(v =>
-        v.lang.startsWith('en') && v.name.includes('Google')
-      ) || available.find(v =>
-        v.lang.startsWith('en')
-      ) || available[0]
-
-      setState(prev => ({
-        ...prev,
-        voices: available,
-        selectedVoice: preferred || null
-      }))
+      setState(prev => ({ ...prev, voices: available }))
     }
 
     loadVoices()
@@ -73,13 +58,17 @@ export function useSpeechSynthesis(): UseSpeechSynthesisReturn {
 
     const utterance = new SpeechSynthesisUtterance(cleanText)
 
-    if (state.selectedVoice) {
-      utterance.voice = state.selectedVoice
-    }
+    const voices = window.speechSynthesis.getVoices()
+    const selectedVoice = voices.find(v => v.name === selectedVoiceName)
+      || voices.find(v => v.lang.startsWith('en') && v.name.includes('Google'))
+      || voices.find(v => v.lang.startsWith('en'))
+      || voices[0]
 
-    utterance.rate = 0.95
-    utterance.pitch = 1.0
-    utterance.volume = 1.0
+    if (selectedVoice) utterance.voice = selectedVoice
+
+    utterance.rate = rate
+    utterance.pitch = pitch
+    utterance.volume = volume
 
     utterance.onstart = () => {
       setState(prev => ({ ...prev, isSpeaking: true, isPaused: false }))
@@ -91,14 +80,13 @@ export function useSpeechSynthesis(): UseSpeechSynthesisReturn {
 
     utterance.onerror = (event) => {
       if (event.error !== 'interrupted') {
-        console.error('Speech synthesis error:', event.error)
+        console.error('Speech error:', event.error)
       }
       setState(prev => ({ ...prev, isSpeaking: false, isPaused: false }))
     }
 
-    utteranceRef.current = utterance
     window.speechSynthesis.speak(utterance)
-  }, [state.selectedVoice])
+  }, [rate, pitch, volume, selectedVoiceName])
 
   const pause = useCallback(() => {
     window.speechSynthesis?.pause()
@@ -112,23 +100,8 @@ export function useSpeechSynthesis(): UseSpeechSynthesisReturn {
 
   const cancel = useCallback(() => {
     window.speechSynthesis?.cancel()
-    setState(prev => ({
-      ...prev,
-      isSpeaking: false,
-      isPaused: false
-    }))
+    setState(prev => ({ ...prev, isSpeaking: false, isPaused: false }))
   }, [])
 
-  const setVoice = useCallback((voice: SpeechSynthesisVoice) => {
-    setState(prev => ({ ...prev, selectedVoice: voice }))
-  }, [])
-
-  return {
-    ...state,
-    speak,
-    pause,
-    resume,
-    cancel,
-    setVoice
-  }
+  return { ...state, speak, pause, resume, cancel }
 }

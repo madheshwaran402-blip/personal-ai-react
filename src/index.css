@@ -1750,3 +1750,146 @@ body {
 .chat-input-row input {
   flex: 1;
 }
+
+/* ===== VOICE SETTINGS ===== */
+.voice-settings-wrapper {
+  position: relative;
+}
+
+.voice-settings-btn {
+  background: transparent;
+  border: 1px solid #333;
+  color: #555;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.voice-settings-btn:hover,
+.voice-settings-btn.active {
+  border-color: #00ff88;
+  color: #00ff88;
+}
+
+.voice-settings-panel {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  width: 280px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 10px;
+  z-index: 200;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.voice-settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #1a1a1a;
+}
+
+.voice-settings-header h3 {
+  font-size: 14px;
+  color: #fff;
+  margin: 0;
+}
+
+.voice-settings-close {
+  background: transparent;
+  border: none;
+  color: #555;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.voice-settings-close:hover {
+  color: #fff;
+}
+
+.voice-settings-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.voice-setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.voice-setting-label {
+  font-size: 12px;
+  color: #888;
+  font-family: 'Space Mono', monospace;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.toggle-btn {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #555;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  transition: all 0.2s;
+}
+
+.toggle-btn.on {
+  background: rgba(0, 255, 136, 0.1);
+  border-color: #00ff88;
+  color: #00ff88;
+}
+
+.voice-select {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #ccc;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  flex: 1;
+  max-width: 130px;
+}
+
+.voice-slider {
+  flex: 1;
+  max-width: 130px;
+  accent-color: #00ff88;
+  height: 4px;
+}
+
+.voice-reset-btn {
+  background: transparent;
+  border: 1px solid #333;
+  color: #555;
+  padding: 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+  font-family: 'Space Mono', monospace;
+}
+
+.voice-reset-btn:hover {
+  border-color: #ff4444;
+  color: #ff4444;
+}
