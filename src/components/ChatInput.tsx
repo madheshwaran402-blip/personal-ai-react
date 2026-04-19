@@ -1,5 +1,9 @@
 import { useState, useRef } from 'react'
 import VoiceButton from './VoiceButton'
+import VoiceIndicator from './VoiceIndicator'
+import { useSpeechRecognition } from '../hooks/useSpeechRecognition'
+import { useSpeechSynthesis } from '../hooks/useSpeechSynthesis'
+import { useVoiceShortcuts } from '../hooks/useVoiceShortcuts'
 
 interface ChatInputProps {
   onSend: (text: string) => void
@@ -11,6 +15,30 @@ const MAX_CHARS = 500
 function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [inputText, setInputText] = useState<string>("")
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const {
+    isListening,
+    transcript,
+    interimTranscript,
+    error: voiceError,
+    isSupported: speechSupported,
+    startListening,
+    stopListening,
+    resetTranscript
+  } = useSpeechRecognition()
+
+  const {
+    isSpeaking,
+    cancel: cancelSpeaking
+  } = useSpeechSynthesis()
+
+  useVoiceShortcuts({
+    onStartListening: startListening,
+    onStopListening: stopListening,
+    onCancelSpeaking: cancelSpeaking,
+    isListening,
+    isSpeaking
+  })
 
   function handleSend(): void {
     if (inputText.trim() === "" || disabled) return
@@ -34,6 +62,11 @@ function ChatInput({ onSend, disabled }: ChatInputProps) {
       role="form"
       aria-label="Send a message"
     >
+      <VoiceIndicator
+        isListening={isListening}
+        isSpeaking={isSpeaking}
+      />
+
       <div className="chat-input-row">
         <label htmlFor="chat-input" className="sr-only">
           Type your message
@@ -51,7 +84,11 @@ function ChatInput({ onSend, disabled }: ChatInputProps) {
           onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
             if (e.key === "Enter" && !isOverLimit) handleSend()
           }}
-          placeholder="Ask me anything about Madheshwaran..."
+          placeholder={
+            isListening
+              ? "Listening... speak now"
+              : "Ask me anything about Madheshwaran..."
+          }
           disabled={disabled}
           maxLength={MAX_CHARS}
           aria-label="Message input"
@@ -60,10 +97,12 @@ function ChatInput({ onSend, disabled }: ChatInputProps) {
           autoComplete="off"
         />
 
-        <VoiceButton
-          onTranscript={handleVoiceTranscript}
-          disabled={disabled}
-        />
+        {speechSupported && (
+          <VoiceButton
+            onTranscript={handleVoiceTranscript}
+            disabled={disabled}
+          />
+        )}
 
         <button
           onClick={handleSend}
@@ -84,6 +123,15 @@ function ChatInput({ onSend, disabled }: ChatInputProps) {
           role="status"
         >
           {remaining} characters remaining
+        </div>
+      )}
+
+      {voiceError && (
+        <div
+          className="voice-error-inline"
+          role="alert"
+        >
+          {voiceError}
         </div>
       )}
     </div>

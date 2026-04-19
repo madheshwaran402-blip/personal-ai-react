@@ -274,7 +274,9 @@ function ChatWindow() {
         <span>⌘Z undo</span>
         <span>⌘E export</span>
         <span>⌘R recruiter</span>
+        <span>⌘M mic</span>
         <span>⌘S stop voice</span>
+        <span>Esc cancel</span>
       </div>
     </div>
   )

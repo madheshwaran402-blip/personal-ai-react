@@ -1893,3 +1893,79 @@ body {
   border-color: #ff4444;
   color: #ff4444;
 }
+
+/* ===== VOICE INDICATOR ===== */
+.voice-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  font-family: 'Space Mono', monospace;
+}
+
+.voice-indicator.listening {
+  background: rgba(255, 68, 68, 0.1);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  color: #ff8888;
+}
+
+.voice-indicator.speaking {
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  color: #00ff88;
+}
+
+.voice-indicator-waves {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.wave {
+  display: block;
+  width: 3px;
+  border-radius: 2px;
+  animation: waveAnim 0.8s infinite ease-in-out;
+}
+
+.voice-indicator.listening .wave {
+  background: #ff4444;
+}
+
+.voice-indicator.speaking .wave {
+  background: #00ff88;
+}
+
+.wave:nth-child(1) {
+  height: 8px;
+  animation-delay: 0s;
+}
+
+.wave:nth-child(2) {
+  height: 14px;
+  animation-delay: 0.15s;
+}
+
+.wave:nth-child(3) {
+  height: 8px;
+  animation-delay: 0.3s;
+}
+
+@keyframes waveAnim {
+  0%, 100% { transform: scaleY(0.5); opacity: 0.6; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+.voice-indicator-text {
+  letter-spacing: 0.5px;
+}
+
+.voice-error-inline {
+  font-size: 12px;
+  color: #ff8888;
+  padding: 4px 0;
+  font-family: 'Space Mono', monospace;
+}
