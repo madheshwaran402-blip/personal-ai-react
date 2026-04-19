@@ -1,103 +1,84 @@
 # Madheshwaran's Personal AI Portfolio
 
-Live at: https://madheshwaran-ai.vercel.app
+Live: https://madheshwaran-ai.vercel.app
 
-A full-stack AI-powered portfolio with a personal chatbot
-that knows everything about Madheshwaran Maruthamuthu —
-VLSI Design student, hardware innovator, and creator of Determinex.
+AI-powered portfolio with RAG + Memory system.
+
+## AI Architecture
+
+User question
+  → Query Preprocessor (expand + clean)
+  → FAISS Knowledge Search (35 chunks, semantic)
+  → Memory Search (SQLite, past conversations)
+  → Enhanced prompt (profile + knowledge + memory)
+  → Ollama Llama 3.2 (custom Modelfile)
+  → Streaming response
+  → Save to memory (SQLite)
 
 ## Tech Stack
 
-**Frontend**
-- React 19 + TypeScript
-- Vite 8 (130ms startup)
-- Zustand (state management)
-- React Query (server state)
-- React Router (navigation)
-- Framer Motion (animations)
-
-**Backend**
-- Python Flask
-- Ollama + Llama 3.2
-- Streaming responses (SSE)
-
-**Testing**
-- Jest + React Testing Library
-- 110+ tests passing
-
-**Deployment**
-- Vercel (frontend)
-- Local Mac (backend)
+Frontend: React 19, TypeScript, Vite 8, Zustand, React Query
+Backend: Python Flask v4.0, Ollama, Llama 3.2
+RAG: FAISS, SentenceTransformers, all-MiniLM-L6-v2
+Memory: SQLite with semantic search
+Testing: Jest + React Testing Library (110+ tests)
+Deployment: Vercel (frontend), local Mac (backend)
 
 ## Features
 
-- Real AI chat powered by Llama 3.2
-- Streaming word-by-word responses
-- Recruiter mode (formal tone)
+Chat:
+- Real AI streaming responses
+- RAG — retrieves relevant knowledge before answering
+- Memory — remembers past conversations
+- Recruiter mode
 - Chat history persistence
-- Export chat as text file
-- Copy message to clipboard
-- Undo clear chat
-- Toast notifications
-- Error boundaries
+- Export chat
+- Copy message
+- Undo clear
+
+Portfolio:
+- Live GitHub stats
 - Scroll progress bar
-- GitHub stats (live API)
 - Analytics tracking
-- Multiple pages (Home, Chat, Projects, 404)
-- 100/100 SEO score
-- 90+ Accessibility score
-- Bundle splitting + Gzip compression
-
-## State Architecture
-
-- AppStore — user preferences (Zustand + persist)
-- ChatStore — messages and chat state (Zustand + persist)
-- UIStore — UI state like scroll progress (Zustand)
-- AnalyticsStore — usage tracking (Zustand + persist)
-- React Query — server state (health check, GitHub API)
+- System status page
+- Error boundaries
+- Toast notifications
+- Accessibility (90+ score)
+- SEO (100/100)
 
 ## Running Locally
 
-Terminal 1 — Start Ollama:
-ollama serve
+Terminal 1: ollama serve
+Terminal 2: cd personal-ai-backend && source venv/bin/activate && python app.py
+Terminal 3: cd personal-ai-react && npm run dev
 
-Terminal 2 — Start Flask backend:
-cd personal-ai-backend
-source venv/bin/activate
-python app.py
-
-Terminal 3 — Start React frontend:
-cd personal-ai-react
-npm run dev
-
-Open http://localhost:3000
-
-## Running Tests
+## Testing
 
 npm run test:ci
 
-## Building for Production
+## Backend Endpoints
 
-npm run build
+GET  /           — server info
+GET  /health     — all system status
+POST /chat       — single response
+POST /chat/stream — streaming response
+POST /search     — semantic search test
+GET  /memory     — memory stats
+POST /memory/search — search memories
+GET  /memory/session/:id — session history
+GET  /models     — available models
 
-## Project Structure
+## Upgrade Path (for interviews)
 
-src/
-  components/   — React components
-  pages/        — Route pages
-  hooks/        — Custom hooks
-  stores/       — Zustand stores
-  context/      — AppContext (Zustand wrapper)
-  services/     — API calls
-  utils/        — Helper functions
-  data/         — Profile data and types
-  __tests__/    — All test files
+1. Add $5 to console.anthropic.com
+2. Change .env MODEL to claude-haiku-4-5-20251001
+3. Deploy to Render.com
+4. AI works 24/7 from anywhere
+Time: 30 minutes
 
-## About Madheshwaran
+## About
 
-B.E./B.Tech VLSI Design & Technology student from Tamil Nadu, India.
-Building FPGA-based deterministic systems and neuromorphic hardware.
-Creator of Determinex — winner of IDEATHON 1.0.
-
-GitHub: github.com/madheshwaran402-blip
-Email: madheshwaran402@gmail.com
+Madheshwaran Maruthamuthu
+B.E./B.Tech VLSI Design — Tamil Nadu
+madheshwaran402@gmail.com
+github.com/madheshwaran402-blip

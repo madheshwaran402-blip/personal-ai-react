@@ -87,6 +87,18 @@ export interface HealthResponse {
   ollama: string
   model: string
   streaming?: boolean
+  model_ready?: boolean
+  fallback?: string
+  rag?: {
+    enabled: boolean
+    chunks: number
+    categories: string[]
+  }
+  memory?: {
+    enabled: boolean
+    total_conversations: number
+    total_sessions: number
+  }
 }
 
 export interface ChatResponse {
