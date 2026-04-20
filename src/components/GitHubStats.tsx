@@ -1,21 +1,23 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { usePortfolioData } from '../hooks/useParallelQueries'
 
-function GitHubStats() {
+const GitHubStats = memo(function GitHubStats() {
   const { githubUser, githubRepos, isLoading, isError } = usePortfolioData()
 
   if (isLoading) {
     return (
-      <div className="github-stats loading" aria-busy="true" aria-label="Loading GitHub stats">
+      <div
+        className="github-stats loading"
+        aria-busy="true"
+        aria-label="Loading GitHub stats"
+      >
         <div className="skeleton-line"></div>
         <div className="skeleton-line short"></div>
       </div>
     )
   }
 
-  if (isError || !githubUser) {
-    return null
-  }
+  if (isError || !githubUser) return null
 
   return (
     <div className="github-stats" aria-label="GitHub statistics">
@@ -31,13 +33,11 @@ function GitHubStats() {
           GitHub Activity
         </a>
       </div>
-
       <div className="github-meta">
         <span>{githubUser.public_repos} repos</span>
         <span>·</span>
         <span>{githubUser.followers} followers</span>
       </div>
-
       {githubRepos && githubRepos.length > 0 && (
         <div className="github-repos">
           {githubRepos.slice(0, 3).map(repo => (
@@ -47,7 +47,7 @@ function GitHubStats() {
               target="_blank"
               rel="noreferrer noopener"
               className="github-repo-card"
-              aria-label={`View ${repo.name} repository on GitHub`}
+              aria-label={`View ${repo.name} on GitHub`}
             >
               <span className="repo-name">{repo.name}</span>
               {repo.language && (
@@ -62,6 +62,6 @@ function GitHubStats() {
       )}
     </div>
   )
-}
+})
 
 export default GitHubStats

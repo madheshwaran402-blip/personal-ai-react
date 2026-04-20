@@ -18,7 +18,6 @@
     "dev": "vite",
     "start": "vite",
     "build": "vite build",
-    "build:analyzer": "vite build && open build/stats.html",
     "preview": "vite preview",
     "test": "react-scripts test",
     "test:ci": "CI=true react-scripts test --watchAll=false"
