@@ -1,13 +1,19 @@
-import React from 'react'
+import React, { memo } from 'react'
 
-function TypingIndicator(){
+const TypingIndicator = memo(function TypingIndicator() {
   return (
-    <div className="message bot typing">
-      <span className="dot"></span>
-      <span className="dot"></span>
-      <span className="dot"></span>
+    <div
+      className="typing-indicator"
+      role="status"
+      aria-label="AI is typing a response"
+      aria-live="polite"
+    >
+      <span className="typing-dot" aria-hidden="true" />
+      <span className="typing-dot" aria-hidden="true" />
+      <span className="typing-dot" aria-hidden="true" />
+      <span className="sr-only">AI is thinking...</span>
     </div>
   )
-}
+})
 
 export default TypingIndicator
