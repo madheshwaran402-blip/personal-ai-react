@@ -135,7 +135,6 @@ export function setLocalStorage<T>(key: string, value: T): void {
   }
 }
 
-
 /**
  * Debounces a function — delays execution until
  * after delay ms have passed since last call
