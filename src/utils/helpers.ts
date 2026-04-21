@@ -1,7 +1,11 @@
-import { Project, SkillWithLevel, SkillLevel, AsyncState } from '../data/types'
+import { Project, SkillWithLevel, SkillLevel } from '../data/types'
 
-// ===== GENERIC HELPER FUNCTIONS =====
-
+/**
+ * Filters an array by a predicate function
+ * @param items - Array to filter
+ * @param predicate - Function that returns true for items to keep
+ * @returns Filtered array
+ */
 export function filterBy<T>(
   items: T[],
   predicate: (item: T) => boolean
@@ -9,6 +13,12 @@ export function filterBy<T>(
   return items.filter(predicate)
 }
 
+/**
+ * Finds first item matching predicate
+ * @param items - Array to search
+ * @param predicate - Function that returns true for match
+ * @returns First matching item or undefined
+ */
 export function findBy<T>(
   items: T[],
   predicate: (item: T) => boolean
@@ -16,6 +26,13 @@ export function findBy<T>(
   return items.find(predicate)
 }
 
+/**
+ * Sorts array by a key, ascending or descending
+ * @param items - Array to sort
+ * @param key - Key to sort by
+ * @param direction - 'asc' or 'desc'
+ * @returns New sorted array (does not mutate original)
+ */
 export function sortBy<T>(
   items: T[],
   key: keyof T,
@@ -28,27 +45,18 @@ export function sortBy<T>(
   })
 }
 
-export function createAsyncState<T>(initialData: T | null = null): AsyncState<T> {
-  return {
-    data: initialData,
-    loading: false,
-    error: null
-  }
-}
 
-export function formatDate(date: Date): string {
-  return date.toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric"
-  })
-}
-
+/**
+ * Truncates text to maxLength with ellipsis
+ */
 export function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text
   return text.slice(0, maxLength) + "..."
 }
 
+/**
+ * Returns color hex string for skill level
+ */
 export function getSkillLevelColor(level: SkillLevel): string {
   const colors: Record<SkillLevel, string> = {
     learning: "#666",
@@ -59,6 +67,9 @@ export function getSkillLevelColor(level: SkillLevel): string {
   return colors[level]
 }
 
+/**
+ * Filters projects by status string
+ */
 export function filterProjectsByStatus(
   projects: Project[],
   status: string
@@ -66,6 +77,9 @@ export function filterProjectsByStatus(
   return filterBy(projects, p => p.status === status)
 }
 
+/**
+ * Gets projects filtered by type
+ */
 export function getProjectsByType(
   projects: Project[],
   type: string
@@ -73,6 +87,9 @@ export function getProjectsByType(
   return filterBy(projects, p => p.type === type)
 }
 
+/**
+ * Converts string array to SkillWithLevel array
+ */
 export function buildSkillsWithLevels(
   skills: string[],
   defaultLevel: SkillLevel = "proficient"
@@ -80,14 +97,23 @@ export function buildSkillsWithLevels(
   return skills.map(name => ({ name, level: defaultLevel }))
 }
 
+/**
+ * Capitalizes first letter of string
+ */
 export function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
+/**
+ * Returns true if running in development mode
+ */
 export function isDev(): boolean {
   return process.env.NODE_ENV === "development"
 }
 
+/**
+ * Safely gets value from localStorage with fallback
+ */
 export function getLocalStorage<T>(key: string, fallback: T): T {
   try {
     const saved = localStorage.getItem(key)
@@ -98,25 +124,22 @@ export function getLocalStorage<T>(key: string, fallback: T): T {
   }
 }
 
+/**
+ * Safely sets value in localStorage
+ */
 export function setLocalStorage<T>(key: string, value: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(value))
   } catch {
-    // Storage full or unavailable
+    // Storage full or unavailable — fail silently
   }
 }
 
-export function measurePerformance(name: string, fn: () => void): void {
-  if (process.env.NODE_ENV === 'development') {
-    const start = performance.now()
-    fn()
-    const end = performance.now()
-    console.log(`${name} took ${(end - start).toFixed(2)}ms`)
-  } else {
-    fn()
-  }
-}
 
+/**
+ * Debounces a function — delays execution until
+ * after delay ms have passed since last call
+ */
 export function debounce<T extends (...args: unknown[]) => void>(
   fn: T,
   delay: number
@@ -128,6 +151,9 @@ export function debounce<T extends (...args: unknown[]) => void>(
   }
 }
 
+/**
+ * Throttles a function — limits calls to once per limit ms
+ */
 export function throttle<T extends (...args: unknown[]) => void>(
   fn: T,
   limit: number
