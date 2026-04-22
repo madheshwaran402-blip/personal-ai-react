@@ -13,6 +13,7 @@ const ProjectsPage = lazy(() => import('./pages/ProjectsPage'))
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 const StatusPage = lazy(() => import('./pages/StatusPage'))
 const ChatWindow = lazy(() => import('./components/ChatWindow'))
+const ResumePage = lazy(() => import('./pages/ResumePage'))
 
 function PageLoader() {
   return (
@@ -115,6 +116,19 @@ function AppLayout() {
               <main id="main-content">
                 <ErrorBoundary>
                   <ProjectsPage />
+                </ErrorBoundary>
+              </main>
+              <footer className="footer" role="contentinfo">
+                <p>Built by Madheshwaran Maruthamuthu</p>
+              </footer>
+            </div>
+          } />
+
+          <Route path="/resume" element={
+            <div className="app">
+              <main id="main-content">
+                <ErrorBoundary>
+                  <ResumePage />
                 </ErrorBoundary>
               </main>
               <footer className="footer" role="contentinfo">

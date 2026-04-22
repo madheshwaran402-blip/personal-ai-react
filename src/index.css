@@ -2414,3 +2414,184 @@ select:focus-visible {
   outline: 2px solid #00ff88;
   outline-offset: 2px;
 }
+
+/* ===== RESUME PAGE ===== */
+.resume-section {
+  margin-bottom: 56px;
+}
+
+.resume-section-title {
+  font-size: 22px !important;
+  color: #fff;
+  margin-bottom: 28px;
+  letter-spacing: -0.5px;
+  border-bottom: 1px solid #1a1a1a;
+  padding-bottom: 12px;
+}
+
+/* ===== SKILL BARS ===== */
+.skills-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.skill-bar-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.skill-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.skill-bar-name {
+  font-size: 13px;
+  color: #ccc;
+  font-family: 'Space Mono', monospace;
+}
+
+.skill-bar-category {
+  font-size: 11px;
+  color: #444;
+  font-family: 'Space Mono', monospace;
+  background: #1a1a1a;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.skill-bar-track {
+  height: 4px;
+  background: #1a1a1a;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.skill-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00cc6a, #00ff88);
+  border-radius: 2px;
+  transition: width 1s ease-out;
+}
+
+/* ===== TIMELINE ===== */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timeline-entry {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 16px;
+  padding-bottom: 32px;
+}
+
+.timeline-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+  z-index: 1;
+}
+
+.timeline-line::after {
+  content: '';
+  position: absolute;
+  top: 14px;
+  bottom: -32px;
+  width: 1px;
+  background: #1a1a1a;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.timeline-entry:last-child .timeline-line::after {
+  display: none;
+}
+
+.timeline-card {
+  background: #111;
+  border: 1px solid #1a1a1a;
+  border-radius: 8px;
+  padding: 16px 20px;
+  transition: border-color 0.2s;
+}
+
+.timeline-card:hover {
+  border-color: #333;
+}
+
+.timeline-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.timeline-type {
+  font-size: 11px;
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.timeline-period {
+  font-size: 12px;
+  color: #444;
+  font-family: 'Space Mono', monospace;
+}
+
+.timeline-title {
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.timeline-description {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.timeline-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.timeline-tag {
+  font-size: 11px;
+  color: #555;
+  background: #1a1a1a;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-family: 'Space Mono', monospace;
+}
+
+/* Mobile resume */
+@media (max-width: 480px) {
+  .timeline-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .skill-bar-name {
+    font-size: 12px;
+  }
+}

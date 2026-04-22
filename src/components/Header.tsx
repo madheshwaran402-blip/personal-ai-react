@@ -59,10 +59,7 @@ function Header() {
       </div>
 
       {/* Desktop nav */}
-      <nav
-        className="desktop-nav"
-        aria-label="Main navigation"
-      >
+      <nav className="desktop-nav" aria-label="Main navigation">
         {isHome ? (
           <>
             <a href="#education">Education</a>
@@ -75,6 +72,7 @@ function Header() {
           <>
             <Link to="/">Home</Link>
             <Link to="/projects">Projects</Link>
+            <Link to="/resume">Resume</Link>
             <Link to="/chat">Chat</Link>
           </>
         )}
@@ -121,6 +119,7 @@ function Header() {
               <>
                 <Link to="/" onClick={() => setMobileMenuOpen(false)}>Home</Link>
                 <Link to="/projects" onClick={() => setMobileMenuOpen(false)}>Projects</Link>
+                <Link to="/resume" onClick={() => setMobileMenuOpen(false)}>Resume</Link>
                 <Link to="/chat" onClick={() => setMobileMenuOpen(false)}>Chat</Link>
                 <Link to="/status" onClick={() => setMobileMenuOpen(false)}>Status</Link>
               </>
