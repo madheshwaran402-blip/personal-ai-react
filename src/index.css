@@ -2595,3 +2595,158 @@ select:focus-visible {
     font-size: 12px;
   }
 }
+
+/* ===== ARCHITECTURE DIAGRAM ===== */
+.architecture-diagram {
+  margin: 40px 0;
+}
+
+.arch-title {
+  font-size: 22px !important;
+  color: #fff;
+  margin-bottom: 24px;
+  letter-spacing: -0.5px;
+  border-bottom: 1px solid #1a1a1a;
+  padding-bottom: 12px;
+}
+
+.arch-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+
+.arch-layer {
+  background: #111;
+  border: 1px solid #1a1a1a;
+  border-left: 3px solid transparent;
+  border-radius: 8px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.arch-layer:hover {
+  border-color: #333;
+  border-left-color: inherit;
+}
+
+.arch-layer.active {
+  border-color: #333;
+}
+
+.arch-layer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.arch-layer-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.arch-layer-name {
+  font-size: 14px;
+  font-family: 'Space Mono', monospace;
+  flex: 1;
+  margin: 0;
+}
+
+.arch-layer-toggle {
+  color: #555;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.arch-layer-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.arch-item {
+  font-size: 11px;
+  color: #666;
+  background: #1a1a1a;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-family: 'Space Mono', monospace;
+}
+
+.arch-layer-description {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #888;
+  line-height: 1.6;
+  padding-top: 12px;
+  border-top: 1px solid #1a1a1a;
+}
+
+/* ===== DATA FLOW ===== */
+.arch-flow-title {
+  font-size: 16px;
+  color: #fff;
+  margin-bottom: 16px;
+  font-family: 'Space Mono', monospace;
+}
+
+.arch-flow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.arch-flow-step {
+  display: grid;
+  grid-template-columns: 28px 1fr 80px;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 12px;
+  background: #111;
+  border: 1px solid #1a1a1a;
+  border-radius: 6px;
+  transition: border-color 0.2s;
+}
+
+.arch-flow-step:hover {
+  border-color: #333;
+}
+
+.arch-flow-number {
+  font-size: 11px;
+  color: #00ff88;
+  font-family: 'Space Mono', monospace;
+  font-weight: 700;
+}
+
+.arch-flow-action {
+  font-size: 13px;
+  color: #888;
+}
+
+.arch-flow-layer {
+  font-size: 10px;
+  color: #444;
+  font-family: 'Space Mono', monospace;
+  text-align: right;
+  background: #1a1a1a;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+/* Mobile arch */
+@media (max-width: 480px) {
+  .arch-flow-step {
+    grid-template-columns: 24px 1fr;
+  }
+
+  .arch-flow-layer {
+    display: none;
+  }
+}

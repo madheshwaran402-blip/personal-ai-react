@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { usePortfolioData } from '../hooks/useParallelQueries'
 import { useHealthQuery } from '../hooks/useHealthQuery'
+import ArchitectureDiagram from '../components/ArchitectureDiagram'
 
 function StatusPage() {
   useEffect(() => {
@@ -24,7 +25,7 @@ function StatusPage() {
       description: "Python Flask v4.0 with RAG + Memory",
       status: (health?.backend === "running" ? "online" : "offline") as "online" | "offline",
       note: "Runs locally on Mac",
-      detail: `v4.0 — RAG + Memory + FAISS`
+      detail: "v4.0 — RAG + Memory + FAISS"
     },
     {
       name: "AI Model",
@@ -55,10 +56,22 @@ function StatusPage() {
   ]
 
   const techStack = [
-    { category: "Frontend", items: ["React 19", "TypeScript", "Vite 8", "Zustand", "React Query"] },
-    { category: "Backend", items: ["Python Flask", "Ollama", "Llama 3.2", "FAISS", "SQLite"] },
-    { category: "AI System", items: ["RAG Pipeline", "Memory Store", "Query Expansion", "Semantic Search"] },
-    { category: "DevOps", items: ["Vercel", "Git", "GitHub Actions", "Gunicorn"] }
+    {
+      category: "Frontend",
+      items: ["React 19", "TypeScript", "Vite 8", "Zustand", "React Query"]
+    },
+    {
+      category: "Backend",
+      items: ["Python Flask", "Ollama", "Llama 3.2", "FAISS", "SQLite"]
+    },
+    {
+      category: "AI System",
+      items: ["RAG Pipeline", "Memory Store", "Query Expansion", "Semantic Search"]
+    },
+    {
+      category: "DevOps",
+      items: ["Vercel", "Git", "GitHub Actions CI", "Gunicorn"]
+    }
   ]
 
   return (
@@ -138,13 +151,15 @@ function StatusPage() {
             </div>
           </div>
 
+          <ArchitectureDiagram />
+
           <div className="status-footer">
             <p>
               Backend offline? Run locally:{' '}
               <code>ollama serve</code> then <code>python app.py</code>
             </p>
             <p className="status-upgrade-note">
-              🚀 Planning to upgrade to Claude API + Render.com for 24/7 availability
+              🚀 Upgrade path: Claude API + Render.com for 24/7 availability
             </p>
           </div>
         </>
